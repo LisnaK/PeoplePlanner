@@ -317,3 +317,5 @@
     .gantt-table td.td-sel { display: none; }
     .gantt-table th.col-month-sel { display: none; }
   }
+
+.app-footer { text-align: center; padding: 16px; font-size: 11px; color: #b0b8cc; }
