@@ -154,6 +154,7 @@ function render() {
   if (state.activeTab==='overview') main.innerHTML = renderOverview();
   else if (state.activeTab==='gantt') main.innerHTML = renderGantt();
   else if (state.activeTab==='backlog') main.innerHTML = renderBacklog();
+  else if (state.activeTab==='calendar') main.innerHTML = renderCalendar();
   else {
     const idx = PILLARS.findIndex(p=>p.id===state.activeTab);
     if (idx>=0) main.innerHTML = renderPillarPanel(PILLARS[idx], idx);
@@ -164,7 +165,8 @@ function renderNav() {
   const topTabs = [
     {id:'overview', label:'Overview', icon:'ti-layout-dashboard'},
     {id:'backlog',  label:'Backlog',  icon:'ti-stack-2'},
-    {id:'gantt',    label:'Timeline', icon:'ti-calendar-stats'}
+    {id:'gantt',    label:'Timeline', icon:'ti-calendar-stats'},
+    {id:'calendar', label:'Business Calendar', icon:'ti-calendar-event', special:true}
   ];
   const pillarTabs = [
     ...PILLARS.map((p,i) => ({id:p.id, label:`T${i+1}`, title:p.label, color:p.color}))
@@ -172,7 +174,15 @@ function renderNav() {
 
   document.getElementById('topNav').innerHTML = topTabs.map(t => {
     const count = t.id==='backlog' ? state.backlog.length : t.id==='gantt' ? scheduledCount() : totalCount();
-    return `<button class="top-nav-btn ${state.activeTab===t.id?'active':''}" onclick="setTab('${t.id}')">
+    const isActive = state.activeTab===t.id;
+    if (t.special) {
+      return `<div class="top-nav-divider" style="margin-left:auto"></div>
+        <button class="top-nav-btn ${isActive?'active':''}" onclick="setTab('${t.id}')"
+          style="background:${isActive?'#7a2e0e':'#c2501f'};color:#fff;border-radius:6px;margin:6px 0;padding:6px 14px;border-bottom:none;">
+          <i class="ti ${t.icon}" aria-hidden="true"></i>${t.label}
+        </button>`;
+    }
+    return `<button class="top-nav-btn ${isActive?'active':''}" onclick="setTab('${t.id}')">
       <i class="ti ${t.icon}" aria-hidden="true"></i>${t.label}${count>0?` <span class="tab-count">${count}</span>`:''}
     </button>`;
   }).join('<div class="top-nav-divider"></div>');
@@ -804,6 +814,28 @@ function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 /* ── BACKLOG ── */
+function renderCalendar() {
+  const navH = (document.querySelector('.app-header')?.offsetHeight||60)
+             + (document.querySelector('.top-nav')?.offsetHeight||44)
+             + (document.querySelector('.tab-nav')?.offsetHeight||42);
+  return `<div style="position:fixed;top:${navH}px;left:0;right:0;bottom:0;z-index:10;overflow:auto;background:#040f24">
+    <div id="calScaler" style="transform-origin:top left;">
+      <iframe id="calendarFrame" src="/calendar.html" style="width:1400px;height:2000px;border:none;display:block;" title="2026 Business Calendar" onload="scaleCalendar()"></iframe>
+    </div>
+  </div>`;
+}
+function scaleCalendar() {
+  const frame = document.getElementById('calendarFrame');
+  const scaler = document.getElementById('calScaler');
+  if (!frame || !scaler) return;
+  const scale = window.innerWidth / 1400;
+  scaler.style.width = (1400 * scale) + 'px';
+  scaler.style.height = (2000 * scale) + 'px';
+  scaler.style.transform = 'scale(' + scale + ')';
+  scaler.style.transformOrigin = 'top left';
+}
+window.addEventListener('resize', scaleCalendar);
+
 function renderBacklog() {
   const items = state.backlog;
   const pillarOpts = `<option value="">Move to theme...</option>` + PILLARS.map((p,i)=>`<option value="${p.id}">P${i+1} — ${p.label}</option>`).join('');
@@ -960,7 +992,7 @@ function exportCSV() {
 }
 
 function exportJSON() {
-  download('H2_2026_People_Plan.json','application/json',JSON.stringify({exported:new Date().toISOString(),plan:'H2 2026 People Workshop Plan',activities:state.activities,backlog:state.backlog||[]},null,2));
+  download('H2_2026_People_Plan.json','application/json',JSON.stringify({exported:new Date().toISOString(),plan:'H2 2026 People Workshop Plan',activities:state.activities,backlog:state.backlog||[],calendarNotes:state.calendarNotes||{}},null,2));
   closeExport(); showToast('JSON exported');
 }
 
@@ -975,6 +1007,7 @@ function importJSON(input) {
       if (!confirm(`This will replace your current plan with the backup from ${data.exported ? new Date(data.exported).toLocaleDateString() : 'unknown date'}. Continue?`)) return;
       PILLARS.forEach(p => { state.activities[p.id] = data.activities[p.id] || []; });
       if (data.backlog) state.backlog = data.backlog;
+      if (data.calendarNotes) state.calendarNotes = data.calendarNotes;
       PILLARS.forEach(p => {
         (state.activities[p.id]||[]).forEach(a => {
           if (!a.id) a.id = generateId();

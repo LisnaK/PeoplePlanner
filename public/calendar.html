@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edge 365 · 2026</title>
+    <style>
+        @page {
+            size: 1400px 2000px;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #040f24 0%, #071a3e 50%, #0a2252 100%);
+            color: #c0d8f8;
+            position: relative;
+            width: 1400px;
+            height: 2000px;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(45,212,212,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -200px;
+            right: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(238,124,51,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .logo-top {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            color: #7aaad8;
+            font-weight: 300;
+        }
+
+        .logo-top span {
+            color: #2dd4d4;
+        }
+
+        .header {
+            padding: 80px 40px 30px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 52px;
+            font-weight: 300;
+            letter-spacing: 0.4em;
+            color: #ffffff;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .header h2 {
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: #7aaad8;
+            font-style: italic;
+        }
+
+        .calendar-grid {
+            margin: 20px 40px 30px 40px;
+            border: 1px solid #1e3558;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .month-header {
+            display: grid;
+            grid-template-columns: 180px repeat(12, 1fr);
+            background: #0b2454;
+            border-bottom: 2px solid #2dd4d4;
+        }
+
+        .month-header div {
+            padding: 18px 12px;
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            color: #c0d8f8;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-right: 1px solid #1a4a9a;
+        }
+
+        .month-header div:first-child {
+            text-align: left;
+            padding-left: 20px;
+            border-bottom: 3px solid #2dd4d4;
+        }
+
+        .month-header div.quarter {
+            color: #2dd4d4;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .month-header div.quarter::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #2dd4d4;
+        }
+
+        .calendar-row {
+            display: grid;
+            grid-template-columns: 180px repeat(12, 1fr);
+            border-bottom: 1px solid #1a4a9a;
+            min-height: 140px;
+        }
+
+        .calendar-row:last-child {
+            border-bottom: none;
+        }
+
+        .row-label {
+            background: #082048;
+            padding: 20px;
+            border-right: 2px solid #1a4a9a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .row-label .number {
+            font-size: 48px;
+            font-weight: 100;
+            line-height: 1;
+            margin-bottom: 8px;
+            opacity: 0.6;
+        }
+
+        .row-label .title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            color: #ffffff;
+        }
+
+        .row-label .subtitle {
+            font-size: 10px;
+            font-style: italic;
+            color: #7aaad8;
+            letter-spacing: 0.05em;
+        }
+
+        .cell {
+            padding: 12px 10px;
+            border-right: 1px solid #1a4a9a;
+            background: #0b2454;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 9px;
+        }
+
+        .cell:last-child {
+            border-right: none;
+        }
+
+        .cell.quarter {
+            box-shadow: inset 2px 0 0 #2dd4d4;
+        }
+
+        .item {
+            color: #c0d8f8;
+            line-height: 1.3;
+            padding: 4px 6px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .item.lead {
+            border-left: 2px solid currentColor;
+            background: rgba(255,255,255,0.03);
+            color: #7aaad8;
+            font-size: 8px;
+        }
+
+        .item.milestone {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            border-left: 3px solid currentColor;
+            font-weight: 600;
+            padding-left: 8px;
+        }
+
+        .item.milestone::before {
+            content: '◆';
+            margin-right: 5px;
+            font-size: 7px;
+        }
+
+        .item.conditional {
+            border: 1px dashed #8ea3bf;
+            font-style: italic;
+            color: #7aaad8;
+            font-size: 8px;
+        }
+
+        .item.label {
+            background: #8ea3bf;
+            color: #0f1e3a;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-align: center;
+            font-size: 8px;
+            padding: 3px 6px;
+        }
+        .row-03 .item.label { background: #5fd4a4; }
+
+        .row-01 .number, .row-01 .milestone { color: #2dd4d4; }
+        .row-02 .number, .row-02 .milestone { color: #ee7c33; }
+        .row-03 .number, .row-03 .milestone { color: #5fd4a4; }
+        .row-04 .number, .row-04 .milestone { color: #a488d4; }
+        .row-05 .number, .row-05 .milestone { color: #6fa3d4; }
+        .row-06 .number, .row-06 .milestone { color: #4a8fb5; }
+
+        .footer {
+            margin: 30px 40px 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .footer-card {
+            background: #082048;
+            border-radius: 4px;
+            padding: 20px 24px;
+            border-top: 3px solid;
+        }
+
+        .footer-card h3 {
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .footer-card .event {
+            margin-bottom: 8px;
+            font-size: 10px;
+            color: #c0d8f8;
+            line-height: 1.5;
+        }
+
+        .footer-card .event .month {
+            display: inline-block;
+            background: currentColor;
+            color: #0f1e3a;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-weight: 700;
+            margin-right: 8px;
+            font-size: 9px;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-card .section {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid #1a4a9a;
+        }
+
+        .footer-card .section:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .footer-card .section-title {
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #7aaad8;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .footer-card.card-02 { border-top-color: #ee7c33; }
+        .footer-card.card-02 .month { background: #ee7c33; }
+        .footer-card.card-03 { border-top-color: #5fd4a4; }
+        .footer-card.card-03 .month.increases { background: #5fd4a4; }
+        .footer-card.card-03 .month.bonuses { background: #e6b44c; }
+        .footer-card.card-04 { border-top-color: #a488d4; }
+        .footer-card.card-04 .month { background: #a488d4; }
+        .footer-card.card-05 { border-top-color: #6fa3d4; }
+        .footer-card.card-05 .month { background: #6fa3d4; }
+        .footer-card.card-06 { border-top-color: #4a8fb5; }
+        .footer-card.card-06 .month { background: #4a8fb5; }
+
+        .brand-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #020b1a;
+            border-top: 2px solid #1a4a9a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+
+        .brand-bar .left {
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            color: #7aaad8;
+            font-weight: 300;
+        }
+
+        .brand-bar .left span {
+            color: #2dd4d4;
+            margin-right: 8px;
+        }
+
+        .brand-bar .right {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: #7aaad8;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-top">
+        <span>▸</span> DERIVCO | BUSINESS CALENDAR
+    </div>
+
+
+    <div class="calendar-grid">
+        <div class="month-header">
+            <div>PROJECT</div>
+            <div>JAN</div>
+            <div>FEB</div>
+            <div class="quarter">MAR<br>Q1 END</div>
+            <div>APR</div>
+            <div>MAY</div>
+            <div class="quarter">JUN<br>Q2 END · H1</div>
+            <div>JUL</div>
+            <div>AUG</div>
+            <div class="quarter">SEP<br>Q3 END</div>
+            <div>OCT</div>
+            <div>NOV</div>
+            <div class="quarter">DEC<br>Q4 END · H2</div>
+        </div>
+
+        <!-- ROW 01: BUSINESS SUCCESS -->
+        <div class="calendar-row row-01">
+            <div class="row-label">
+                <div class="number">01</div>
+                <div class="title">BUSINESS<br>SUCCESS</div>
+                <div class="subtitle">leadership cycle</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+                <div class="item milestone">Quarterly Business Review</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+                <div class="item milestone">Quarterly Business Review</div>
+                <div class="item milestone">H1 Targets (5 Pillars)</div>
+                <div class="item milestone">Bonus Unlock Y/N</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+                <div class="item milestone">Quarterly Business Review</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item lead">Monthly Business Insights</div>
+                <div class="item lead">Target progress communicated</div>
+                <div class="item milestone">Quarterly Business Review</div>
+                <div class="item milestone">H1 Targets (5 Pillars)</div>
+                <div class="item milestone">Bonus Unlock Y/N</div>
+            </div>
+        </div>
+
+        <!-- ROW 02: PERFORMANCE MANAGEMENT -->
+        <div class="calendar-row row-02">
+            <div class="row-label">
+                <div class="number">02</div>
+                <div class="title">PERFORMANCE<br>MANAGEMENT</div>
+                <div class="subtitle">quarterly reviews · 5 milestones</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+                <div class="item milestone">Self + Mngr Assess<br>late Feb · M1 of 5</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item milestone">Mngr Assess Employee<br>early Mar · M2</div>
+                <div class="item milestone">Discuss<br>mid Mar · M3</div>
+                <div class="item milestone">Calibration & Outcomes<br>late Mar · M4</div>
+                <div class="item milestone">Knowledge Contribution Due<br>end Mar · M5</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+                <div class="item milestone">Self + Mngr Assess<br>late May · M1 of 5</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item milestone">Mngr Assess Employee<br>early Jun · M2</div>
+                <div class="item milestone">Discuss<br>mid Jun · M3</div>
+                <div class="item milestone">Calibration & Outcomes<br>late Jun · M4</div>
+                <div class="item milestone">Knowledge Contribution Due<br>end Jun · M5</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+                <div class="item milestone">Self + Mngr Assess<br>late Aug · M1 of 5</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item milestone">Mngr Assess Employee<br>early Sep · M2</div>
+                <div class="item milestone">Discuss<br>mid Sep · M3</div>
+                <div class="item milestone">Calibration & Outcomes<br>late Sep · M4</div>
+                <div class="item milestone">Knowledge Contribution Due<br>end Sep · M5</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">1:1 perf discussion</div>
+                <div class="item milestone">Self + Mngr Assess<br>late Nov · M1 of 5</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item milestone">Mngr Assess Employee<br>early Dec · M2</div>
+                <div class="item milestone">Discuss<br>mid Dec · M3</div>
+                <div class="item milestone">Calibration & Outcomes<br>late Dec · M4</div>
+                <div class="item milestone">Knowledge Contribution Due<br>end Dec · M5</div>
+            </div>
+        </div>
+
+        <!-- ROW 03: REWARD -->
+        <div class="calendar-row row-03">
+            <div class="row-label">
+                <div class="number">03</div>
+                <div class="title">REWARD</div>
+                <div class="subtitle">increases & bonuses</div>
+            </div>
+            <div class="cell">
+                <div class="item milestone">Increases paid · 28 Jul</div>
+                <div class="item conditional">IF Bonus Unlock = Y</div>
+                <div class="item milestone" style="color: #e6b44c;">Jun Bonus paid · 28 Jul</div>
+            </div>
+            <div class="cell">
+                <div class="item conditional">IF Bonus Unlock = Y</div>
+                <div class="item milestone" style="color: #e6b44c;">Dec Bonus paid · Jan</div>
+            </div>
+            <div class="cell quarter"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter">
+                <div class="item label">INCREASES</div>
+                <div class="item milestone">Increases</div>
+                <div class="item label bonuses">BONUSES</div>
+                <div class="item conditional">IF Bonus Unlock = Y</div>
+                <div class="item milestone" style="color: #e6b44c;">Bonus (% paid = Indiv Impact)</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter">
+                <div class="item label bonuses">BONUSES</div>
+                <div class="item conditional">IF Bonus Unlock = Y</div>
+                <div class="item milestone" style="color: #e6b44c;">Bonus (% paid = Indiv Impact)</div>
+            </div>
+        </div>
+
+        <!-- ROW 04: PROMOTIONS -->
+        <div class="calendar-row row-04">
+            <div class="row-label">
+                <div class="number">04</div>
+                <div class="title">PROMOTIONS</div>
+                <div class="subtitle">6-step sub-cycle · Q2 & Q4</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter"></div>
+            <div class="cell">
+                <div class="item lead">Promo Pool ID</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Buss Need ID</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item lead">Post Vacancies + Assess</div>
+                <div class="item milestone">Sign Off</div>
+                <div class="item milestone">Announce</div>
+                <div class="item milestone">NEW Salary</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter"></div>
+            <div class="cell">
+                <div class="item lead">Promo Pool ID</div>
+            </div>
+            <div class="cell">
+                <div class="item lead">Buss Need ID</div>
+            </div>
+            <div class="cell quarter">
+                <div class="item lead">Post Vacancies + Assess</div>
+                <div class="item milestone">Sign Off</div>
+                <div class="item milestone">Announce</div>
+                <div class="item milestone">NEW Salary</div>
+            </div>
+        </div>
+
+        <!-- ROW 05: COMPLIANCE -->
+        <div class="calendar-row row-05">
+            <div class="row-label">
+                <div class="number">05</div>
+                <div class="title">COMPLIANCE</div>
+                <div class="subtitle">in progress</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter">
+                <div class="item milestone">Quarterly Risk Assessment per BU</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter">
+                <div class="item milestone">Quarterly Risk Assessment per BU</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter">
+                <div class="item milestone">Quarterly Risk Assessment per BU</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter">
+                <div class="item milestone">Quarterly Risk Assessment per BU</div>
+            </div>
+        </div>
+        <!-- ROW 06: FINANCE -->
+        <div class="calendar-row row-06">
+            <div class="row-label">
+                <div class="number">06</div>
+                <div class="title">FINANCE</div>
+                <div class="subtitle">awaiting content</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell quarter"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-card card-02">
+            <h3>02 Performance Mgmt — 5 Milestones / Quarter</h3>
+            <div class="event"><span class="month">M1</span> Self + Mngr Assess (late prior mo.)</div>
+            <div class="event"><span class="month">M2</span> Mngr Assess Employee (early)</div>
+            <div class="event"><span class="month">M3</span> Discuss (mid)</div>
+            <div class="event"><span class="month">M4</span> Calibration & Outcomes (late)</div>
+            <div class="event"><span class="month">M5</span> Knowledge Contribution Due (end)</div>
+        </div>
+
+        <div class="footer-card card-03">
+            <h3>03 Reward — Key Dates</h3>
+            <div class="section">
+                <div class="section-title">INCREASES</div>
+                <div class="event"><span class="month increases">JUN</span> Increases</div>
+            </div>
+            <div class="section">
+                <div class="section-title">BONUSES (CONDITIONAL ON BONUS UNLOCK = Y)</div>
+                <div class="event"><span class="month bonuses">JUN</span> Bonus (% paid = Indiv Impact)</div>
+                <div class="event"><span class="month bonuses">DEC</span> Bonus (% paid = Indiv Impact)</div>
+            </div>
+        </div>
+
+        <div class="footer-card card-04">
+            <h3>04 Promotions — 6-Step Sub-Cycle (Q2 & Q4)</h3>
+            <div class="event"><span class="month">APR</span> Promo Pool ID</div>
+            <div class="event"><span class="month">MAY</span> Buss Need ID</div>
+            <div class="event"><span class="month">JUN</span> Post Vacancies + Assess → Sign Off → Announce → NEW Salary</div>
+            <div class="event"><span class="month">OCT</span> Promo Pool ID</div>
+            <div class="event"><span class="month">NOV</span> Buss Need ID</div>
+            <div class="event"><span class="month">DEC</span> Post Vacancies + Assess → Sign Off → Announce → NEW Salary</div>
+        </div>
+
+        <div class="footer-card card-05">
+            <h3>05 Compliance — Key Dates</h3>
+            <div class="section-title">Building from user-supplied content</div>
+            <div class="event"><span class="month">MAR</span> Quarterly Risk Assessment (per BU)</div>
+            <div class="event"><span class="month">JUN</span> Quarterly Risk Assessment (per BU)</div>
+            <div class="event"><span class="month">SEP</span> Quarterly Risk Assessment (per BU)</div>
+            <div class="event"><span class="month">DEC</span> Quarterly Risk Assessment (per BU)</div>
+        </div>
+
+        <div class="footer-card card-06">
+            <h3>06 Finance — Key Dates</h3>
+            <div class="section-title">Awaiting source-verified content</div>
+        </div>
+    </div>
+
+    <div class="brand-bar">
+        <div class="left">
+            <span>▸</span> DERIVCO | BUSINESS CALENDAR
+        </div>
+        <div class="right">
+            EDGE 365 · 2026
+        </div>
+    </div>
+
+<script>
+const ROW_COLORS = {
+  'row-01': '#2dd4d4',
+  'row-02': '#ee7c33',
+  'row-03': '#5fd4a4',
+  'row-04': '#a488d4',
+  'row-05': '#6fa3d4',
+  'row-06': '#4a8fb5'
+};
+
+let calNotes = {};
+
+async function loadNotes() {
+  try {
+    const res = await fetch('/api/state');
+    const data = await res.json();
+    calNotes = data.calendarNotes || {};
+    renderAllNotes();
+  } catch(e) {}
+}
+
+async function saveNotes() {
+  try {
+    const res = await fetch('/api/state');
+    const data = await res.json();
+    data.calendarNotes = calNotes;
+    await fetch('/api/state', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  } catch(e) {}
+}
+
+function renderAllNotes() {
+  document.querySelectorAll('.calendar-row').forEach(row => {
+    const rowId = [...row.classList].find(c => c.startsWith('row-0'));
+    if (!rowId) return;
+    const cells = [...row.querySelectorAll('.cell')];
+    cells.forEach((cell, mi) => {
+      const key = rowId + '-' + mi;
+      cell.querySelectorAll('.user-note').forEach(n => n.remove());
+      const addBtn = cell.querySelector('.add-note-btn');
+      (calNotes[key] || []).forEach((text, ni) => {
+        const el = makeNoteEl(text, rowId, mi, ni);
+        if (addBtn) cell.insertBefore(el, addBtn);
+        else cell.appendChild(el);
+      });
+    });
+  });
+}
+
+function makeNoteEl(text, rowId, mi, ni) {
+  const color = ROW_COLORS[rowId] || '#c0d8f8';
+  const div = document.createElement('div');
+  div.className = 'item milestone user-note';
+  div.style.cssText = 'color:' + color + ';cursor:pointer;position:relative;padding-right:16px';
+  div.title = 'Click to edit';
+  div.textContent = text;
+  const del = document.createElement('span');
+  del.textContent = '×';
+  del.style.cssText = 'position:absolute;top:1px;right:3px;font-size:10px;opacity:0.5;cursor:pointer';
+  del.onclick = (e) => { e.stopPropagation(); const k=rowId+'-'+mi; calNotes[k].splice(ni,1); if(!calNotes[k].length) delete calNotes[k]; saveNotes(); renderAllNotes(); };
+  div.appendChild(del);
+  div.onclick = (e) => { if(e.target===del) return; openEditor(rowId, mi, ni, text); };
+  return div;
+}
+
+function openEditor(rowId, mi, ni, existing) {
+  closeEditor();
+  const color = ROW_COLORS[rowId] || '#c0d8f8';
+  const overlay = document.createElement('div');
+  overlay.id = 'cal-editor-overlay';
+  overlay.style.cssText = 'position:absolute;top:0;left:0;width:1400px;height:2000px;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6)';
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#0b2454;border:2px solid '+color+';border-radius:6px;padding:20px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.5)';
+  const label = document.createElement('div');
+  label.textContent = ni==null ? 'Add note' : 'Edit note';
+  label.style.cssText = 'font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:'+color+';margin-bottom:10px';
+  const ta = document.createElement('textarea');
+  ta.value = existing || '';
+  ta.placeholder = 'Type your note...';
+  ta.style.cssText = 'width:100%;height:80px;background:#071a3e;border:1px solid #1e3558;border-radius:4px;color:#c0d8f8;font-size:12px;padding:8px;resize:none;font-family:inherit;outline:none;box-sizing:border-box';
+  const btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:12px';
+  const save = document.createElement('button');
+  save.textContent = 'Save';
+  save.style.cssText = 'background:'+color+';color:#0f1e3a;border:none;border-radius:4px;padding:6px 18px;font-size:12px;font-weight:700;cursor:pointer';
+  save.onclick = () => { const val=ta.value.trim(); if(!val){closeEditor();return;} const k=rowId+'-'+mi; if(!calNotes[k]) calNotes[k]=[]; if(ni!=null) calNotes[k][ni]=val; else calNotes[k].push(val); saveNotes(); renderAllNotes(); closeEditor(); };
+  const cancel = document.createElement('button');
+  cancel.textContent = 'Cancel';
+  cancel.style.cssText = 'background:none;color:#7aaad8;border:1px solid #1e3558;border-radius:4px;padding:6px 14px;font-size:12px;cursor:pointer';
+  cancel.onclick = closeEditor;
+  btns.appendChild(cancel); btns.appendChild(save);
+  box.appendChild(label); box.appendChild(ta); box.appendChild(btns);
+  overlay.appendChild(box);
+  overlay.onclick = (e) => { if(e.target===overlay) closeEditor(); };
+  document.body.appendChild(overlay);
+  ta.focus();
+  ta.onkeydown = (e) => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();save.click();} if(e.key==='Escape') closeEditor(); };
+}
+
+function closeEditor() { const el=document.getElementById('cal-editor-overlay'); if(el) el.remove(); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadNotes();
+  document.querySelectorAll('.calendar-row').forEach(row => {
+    const rowId = [...row.classList].find(c => c.startsWith('row-0'));
+    if (!rowId) return;
+    const color = ROW_COLORS[rowId] || '#c0d8f8';
+    [...row.querySelectorAll('.cell')].forEach((cell, mi) => {
+      const btn = document.createElement('div');
+      btn.textContent = '+ add';
+      btn.className = 'add-note-btn';
+      btn.style.cssText = 'font-size:8px;color:'+color+';opacity:0.4;cursor:pointer;margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;display:none';
+      btn.onclick = () => openEditor(rowId, mi, null, '');
+      cell.appendChild(btn);
+      cell.onmouseenter = () => btn.style.display='block';
+      cell.onmouseleave = () => btn.style.display='none';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
