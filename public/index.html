@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H2 2026 — People Workshop Planner</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-top">
+    <div class="header-brand">
+      <div class="header-logo">P</div>
+      <div>
+        <div class="header-title">PEOPLE DIVISION</div>
+        <div class="header-subtitle">H2 2026 Strategy</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-ghost" onclick="openExport()"><i class="ti ti-download"></i> Export</button>
+      <button class="btn-ghost" onclick="document.getElementById('importFile').click()"><i class="ti ti-upload"></i> Import</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)" />
+    </div>
+  </div>
+</header>
+
+<div class="top-nav" id="topNav"></div>
+<nav class="tab-nav" id="tabNav"></nav>
+<main class="main" id="mainContent"></main>
+
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <div class="modal-title">Export workshop plan</div>
+    <div class="modal-sub">Choose a format to share or save your plan</div>
+    <div class="export-options">
+      <div class="export-option" onclick="exportCSV()">
+        <div class="export-option-icon"><i class="ti ti-table"></i></div>
+        <div><div class="export-option-name">CSV spreadsheet</div><div class="export-option-desc">All activities across all pillars — includes Gantt months</div></div>
+      </div>
+      <div class="export-option" onclick="exportJSON()">
+        <div class="export-option-icon"><i class="ti ti-file-code"></i></div>
+        <div><div class="export-option-name">JSON backup</div><div class="export-option-desc">Full backup including Gantt data, reloadable in this planner</div></div>
+      </div>
+      <div class="export-option" onclick="window.print()">
+        <div class="export-option-icon"><i class="ti ti-printer"></i></div>
+        <div><div class="export-option-name">Print / Save as PDF</div><div class="export-option-desc">Prints all pillars and the Gantt chart view</div></div>
+      </div>
+    </div>
+    <button class="modal-close" onclick="closeExport()">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="pillar-tooltip"></div>
+
+<script src="/app.js"></script>
+</html>
