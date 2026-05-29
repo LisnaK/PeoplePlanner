@@ -1,0 +1,10 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Memory / session files
+CLAUDE.md
+memory/
+
+# PDFs (large binary files)
+*.pdf
