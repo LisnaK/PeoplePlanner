@@ -234,7 +234,6 @@
   .gantt-row-parent { background: var(--surface); }
   .gantt-row-parent:hover { background: #e8edf8; }
   .gantt-row-sub { background: #f8f9fe; }
-  .gantt-row-sub:hover { background: #dde3f5; }
   .gantt-bar-abs { position: absolute; top: 50%; transform: translateY(-50%); min-width: 4px; }
   .gantt-bar-parent { height: 26px; border-radius: 13px; }
   .gantt-bar-subtask { height: 14px; border-radius: 7px; opacity: 0.65; }

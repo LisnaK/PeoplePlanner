@@ -76,6 +76,16 @@ const supportTags   = (support) => {
     return `<span class="badge support-tag ${t.cls}"><i class="ti ${t.icon}" style="font-size:10px" aria-hidden="true"></i> ${t.label}</span>`;
   }).join('')}</div>`;
 };
+const supportMiniPills = (support) => {
+  if (!support || support.length === 0) return '';
+  return support.map(s =>
+    s === 'BrandComms'
+      ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:0.04em;color:#c2410c;background:#fde8e0;border-radius:20px;padding:1px 6px;white-space:nowrap;line-height:1.6">BR</span>`
+      : s === 'GGL'
+      ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:0.04em;color:#1e1e1e;background:#e5e7eb;border-radius:20px;padding:1px 6px;white-space:nowrap;line-height:1.6">GGL</span>`
+      : ''
+  ).join(' ');
+};
 const supportCheckboxes = (pfx, support) => {
   const has = (v) => (support||[]).includes(v) ? 'checked' : '';
   return `<div class="support-check-row">
@@ -190,7 +200,13 @@ function renderOverview() {
       ? `<div style="font-size:11px;color:var(--text-light);text-align:center;padding:6px 0;font-style:italic">No activities yet</div>`
       : `<div class="pillar-col-activities">
           ${activities.map(a =>
-            `<div class="pillar-col-activity-item" style="border-left-color:${p.color}" onclick="event.stopPropagation();setTab('${p.id}')">${escHtml(a.name)}${(a.support&&a.support.length)?`<span style="margin-left:6px">${a.support.map(s=>s==='BrandComms'?`<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#c2410c;margin-left:2px" title="Brand &amp; Comms"></span>`:s==='GGL'?`<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#1e1e1e;margin-left:2px" title="GGL"></span>`:``).join('')}</span>`:''}</div>`
+            `<div class="pillar-col-activity-item" style="border-left-color:${p.color}" onclick="event.stopPropagation();setTab('${p.id}')">
+              ${escHtml(a.name)}
+              ${(()=>{
+                const allSupport = [...new Set([...(a.support||[]), ...(a.children||[]).flatMap(c=>c.support||[])])];
+                return allSupport.length ? `<span style="margin-left:5px;display:inline-flex;gap:3px;align-items:center">${supportMiniPills(allSupport)}</span>` : '';
+              })()}
+            </div>`
           ).join('')}
         </div>`;
     return `<div class="pillar-col" onclick="setTab('${p.id}')">
@@ -248,7 +264,7 @@ function renderPillarPanel(p, idx) {
           const chevron = `<button class="expand-btn ${isExpanded?'open':''}" onclick="toggleExpand('${key}')" aria-label="${isExpanded?'Collapse':'Expand'} sub-tasks" title="Toggle sub-tasks"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>`;
           const childrenBlock = isExpanded ? renderChildRows(p, a, i, key, children) : '';
           return `<div class="activity-row">
-            <span class="activity-name-cell"><div class="activity-name-wrap">${chevron}<div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="background:${p.color};color:#fff;border-radius:20px;padding:3px 14px;font-size:13px;font-weight:600;white-space:nowrap;display:inline-block">${escHtml(a.name)}</span>${childBadge}</div>${supportTags(a.support)}</div></div></span>
+            <span class="activity-name-cell"><div class="activity-name-wrap">${chevron}<div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="background:${p.color};color:#fff;border-radius:20px;padding:3px 14px;font-size:13px;font-weight:600;white-space:nowrap;display:inline-block">${escHtml(a.name)}</span>${childBadge}</div>${supportTags([...new Set([...(a.support||[]), ...(a.children||[]).flatMap(c=>c.support||[])])])}</div></div></span>
             <span class="activity-owner-cell">${escHtml(a.owner||'—')}</span>
             <span>${monthRangeBadge(a)}</span>
             <span>${statusBadge(a.status)}</span>
@@ -409,7 +425,7 @@ function renderGantt() {
     const hasChildren = children.length > 0;
     const isCollapsed = !state.ganttExpandedParents.has(ganttKey);
     const chevron = hasChildren
-      ? `<button onclick="toggleGanttParent('${ganttKey}')" style="background:none;border:none;cursor:pointer;color:var(--text-light);padding:0 4px 0 0;font-size:12px;display:inline-flex;align-items:center;flex-shrink:0;transition:transform 0.15s;transform:rotate(${isCollapsed?'0deg':'90deg'})"><i class="ti ti-chevron-right"></i></button>`
+      ? `<button onclick="event.stopPropagation();toggleGanttParent('${ganttKey}')" style="background:none;border:none;cursor:pointer;color:var(--text-light);padding:0 4px 0 0;font-size:12px;display:inline-flex;align-items:center;flex-shrink:0;transition:transform 0.15s;transform:rotate(${isCollapsed?'0deg':'90deg'})"><i class="ti ti-chevron-right"></i></button>`
       : `<span style="display:inline-block;width:16px;flex-shrink:0"></span>`;
     const subBadge = hasChildren ? `<span style="font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1px 6px;color:var(--text-light);margin-left:4px">${children.length}</span>` : '';
 
@@ -417,7 +433,7 @@ function renderGantt() {
     const activeStyle = isActive ? `background:${a.pillarColor}22;border-left:3px solid ${a.pillarColor};` : '';
     tableRows += `<tr class="gantt-row-parent" onclick="setGanttActiveRow('${ganttKey}')" style="${activeStyle}cursor:pointer">
       <td class="td-name" style="padding-left:${isActive?'21':'24'}px">
-        <div style="display:flex;align-items:center">${chevron}<div><div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">${escHtml(a.name)}${subBadge}</div><div style="margin-top:4px"><select onchange="updateGanttStatus('${a.pillarId}',${a.idx},this.value);setGanttActiveRow('${ganttKey}')" style="font-size:11px;padding:2px 6px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:18px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22 viewBox=%220 0 8 8%22><path fill=%22%23666%22 d=%22M0 2l4 4 4-4z%22/></svg>');background-repeat:no-repeat;background-position:right 5px center;background-size:8px"><option value="Planned" ${a.status==='Planned'?'selected':''}>Planned</option><option value="In Progress" ${a.status==='In Progress'?'selected':''}>In Progress</option><option value="Done" ${a.status==='Done'?'selected':''}>Done</option></select></div></div></div>
+        <div style="display:flex;align-items:center">${chevron}<div><div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">${escHtml(a.name)}${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="margin-left:4px;display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}</div><div style="margin-top:4px"><select onclick="event.stopPropagation()" onchange="updateGanttStatus('${a.pillarId}',${a.idx},this.value);state.ganttActiveRow='${ganttKey}';render()" style="font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:16px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22 viewBox=%220 0 8 8%22><path fill=%22%23aaa%22 d=%22M0 2l4 4 4-4z%22/></svg>');background-repeat:no-repeat;background-position:right 4px center;background-size:7px;opacity:0.75"><option value="Planned" ${a.status==='Planned'?'selected':''}>Planned</option><option value="In Progress" ${a.status==='In Progress'?'selected':''}>In Progress</option><option value="Done" ${a.status==='Done'?'selected':''}>Done</option></select></div></div></div>
       </td>
       <td class="td-owner">${escHtml(a.owner||'—')}</td>
       <td class="td-sel">${dateInput(`gsd-${a.pillarId}-${a.idx}`, a.startDate, `updateGanttDate('${a.pillarId}',${a.idx},'startDate',this.value)`)}</td>
@@ -429,7 +445,7 @@ function renderGantt() {
       children.forEach((c, ci) => {
         const csm = c.startMonth ? parseInt(c.startMonth) : null;
         const cem = c.endMonth   ? parseInt(c.endMonth)   : null;
-        tableRows += `<tr class="gantt-row-sub">
+        tableRows += `<tr class="gantt-row-sub" style="--row-color:${a.pillarColor}" onmouseover="this.style.background='${a.pillarColor}18'" onmouseout="this.style.background=''" onclick="event.stopPropagation()">
           <td class="td-name" style="padding-left:28px">
             <div style="display:flex;align-items:center;gap:6px">
               ${children.length > 1 ? `<div style="display:flex;flex-direction:column;gap:1px;flex-shrink:0">
@@ -438,8 +454,8 @@ function renderGantt() {
               </div>` : `<div style="width:18px;flex-shrink:0"></div>`}
               <span style="color:#bcc4d8;font-size:13px;flex-shrink:0"><i class="ti ti-corner-down-right"></i></span>
               <div>
-                <div style="font-size:12px;font-weight:400;color:var(--text-muted);font-style:italic">${escHtml(c.name)}</div>
-                <div style="margin-top:3px"><select onchange="updateSubGanttStatus('${a.pillarId}',${a.idx},${ci},this.value)" style="font-size:11px;padding:2px 6px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:18px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22 viewBox=%220 0 8 8%22><path fill=%22%23666%22 d=%22M0 2l4 4 4-4z%22/></svg>');background-repeat:no-repeat;background-position:right 5px center;background-size:8px"><option value="Planned" ${c.status==='Planned'?'selected':''}>Planned</option><option value="In Progress" ${c.status==='In Progress'?'selected':''}>In Progress</option><option value="Done" ${c.status==='Done'?'selected':''}>Done</option></select></div>
+                <div style="font-size:12px;font-weight:400;color:var(--text-muted);font-style:italic;display:flex;align-items:center;gap:4px">${escHtml(c.name)}${(c.support&&c.support.length)?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(c.support)}</span>`:''}</div>
+                <div style="margin-top:3px"><select onchange="updateSubGanttStatus('${a.pillarId}',${a.idx},${ci},this.value)" style="font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:16px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22 viewBox=%220 0 8 8%22><path fill=%22%23aaa%22 d=%22M0 2l4 4 4-4z%22/></svg>');background-repeat:no-repeat;background-position:right 4px center;background-size:7px;opacity:0.75"><option value="Planned" ${c.status==='Planned'?'selected':''}>Planned</option><option value="In Progress" ${c.status==='In Progress'?'selected':''}>In Progress</option><option value="Done" ${c.status==='Done'?'selected':''}>Done</option></select></div>
               </div>
             </div>
           </td>
@@ -525,6 +541,7 @@ function setGanttActiveRow(key) {
 function toggleGanttParent(key) {
   if (state.ganttExpandedParents.has(key)) state.ganttExpandedParents.delete(key);
   else state.ganttExpandedParents.add(key);
+  state.ganttActiveRow = key;
   render();
 }
 
@@ -561,11 +578,18 @@ function renderChildRows(p, a, parentIdx, key, children) {
           <div><div class="edit-label">Status</div><select id="esub-status-${key}-${ci}"><option value="Planned" ${c.status==='Planned'?'selected':''}>Planned</option><option value="In Progress" ${c.status==='In Progress'?'selected':''}>In Progress</option><option value="Done" ${c.status==='Done'?'selected':''}>Done</option></select></div>
           <div></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 16px 1fr auto;gap:8px;align-items:end">
+        <div style="display:grid;grid-template-columns:1fr 16px 1fr 1fr;gap:8px;align-items:end">
           <div><div class="edit-label">Start date</div><input type="date" id="esub-startdate-${key}-${ci}" value="${c.startDate||''}" /></div>
           <div style="display:flex;align-items:center;justify-content:center;padding-bottom:2px;color:var(--text-light)">→</div>
           <div><div class="edit-label">End date</div><input type="date" id="esub-enddate-${key}-${ci}" value="${c.endDate||''}" /></div>
-          <div class="edit-btns" style="padding-bottom:1px"><button class="btn-save" onclick="saveSubEdit('${p.id}',${parentIdx},${ci})"><i class="ti ti-check" aria-hidden="true"></i> Save</button><button class="btn-cancel" onclick="cancelSubEdit()">Cancel</button></div>
+          <div>
+            <div class="edit-label" style="margin-bottom:6px">Support needed</div>
+            ${supportCheckboxes(`esub-support-${key}-${ci}`, c.support)}
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #d1d9f0">
+          <button class="btn-save" onclick="saveSubEdit('${p.id}',${parentIdx},${ci})"><i class="ti ti-check" aria-hidden="true"></i> Save</button>
+          <button class="btn-cancel" onclick="cancelSubEdit()">Cancel</button>
         </div>
       </div>`;
     }
@@ -649,6 +673,7 @@ function saveSubEdit(pillarId, parentIdx, ci) {
     a.children[ci].status    = (document.getElementById(`esub-status-${est.key}-${ci}`)    || {}).value || 'Planned';
     a.children[ci].startDate = (document.getElementById(`esub-startdate-${est.key}-${ci}`) || {}).value || null;
     a.children[ci].endDate   = (document.getElementById(`esub-enddate-${est.key}-${ci}`)   || {}).value || null;
+    a.children[ci].support   = readSupportCheckboxes(`esub-support-${est.key}-${ci}`);
   }
   state.editingSubTask = null;
   saveState(); render(); showToast('Sub-task updated');
@@ -682,18 +707,18 @@ function renderEditRow(p, a, idx) {
         </div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 16px 1fr auto;gap:8px;align-items:end;margin-top:8px">
+    <div style="display:grid;grid-template-columns:1fr 16px 1fr 1fr;gap:8px;align-items:end;margin-top:8px">
       <div><div class="edit-label">Start date</div><input type="date" id="edit-startdate-${p.id}-${idx}" value="${a.startDate||''}" /></div>
       <div style="display:flex;align-items:center;justify-content:center;padding-bottom:2px;color:var(--text-light)">→</div>
       <div><div class="edit-label">End date</div><input type="date" id="edit-enddate-${p.id}-${idx}" value="${a.endDate||''}" /></div>
-      <div class="edit-btns" style="padding-bottom:1px">
-        <button class="btn-save" onclick="saveEdit('${p.id}',${idx})"><i class="ti ti-check" aria-hidden="true"></i> Save</button>
-        <button class="btn-cancel" onclick="cancelEdit()">Cancel</button>
+      <div>
+        <div class="edit-label" style="margin-bottom:6px">Support needed</div>
+        ${supportCheckboxes(`edit-support-${p.id}-${idx}`, a.support)}
       </div>
     </div>
-    <div style="margin-top:8px">
-      <div class="edit-label">Support needed</div>
-      ${supportCheckboxes(`edit-support-${p.id}-${idx}`, a.support)}
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #d1d9f0">
+      <button class="btn-save" onclick="saveEdit('${p.id}',${idx})"><i class="ti ti-check" aria-hidden="true"></i> Save</button>
+      <button class="btn-cancel" onclick="cancelEdit()">Cancel</button>
     </div>
   </div>`;
 }
