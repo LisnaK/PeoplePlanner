@@ -935,7 +935,7 @@ function exportCSV() {
 }
 
 function exportJSON() {
-  download('H2_2026_People_Plan.json','application/json',JSON.stringify({exported:new Date().toISOString(),plan:'H2 2026 People Workshop Plan',activities:state.activities},null,2));
+  download('H2_2026_People_Plan.json','application/json',JSON.stringify({exported:new Date().toISOString(),plan:'H2 2026 People Workshop Plan',activities:state.activities,backlog:state.backlog||[]},null,2));
   closeExport(); showToast('JSON exported');
 }
 
