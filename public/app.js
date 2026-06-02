@@ -379,19 +379,29 @@ function renderGantt() {
   const monthTicks = VISIBLE_MONTHS.map(m => `<div class="gantt-month-tick">${m}</div>`).join('');
   const trackSegs  = VISIBLE_MONTHS.map(() => `<div class="gantt-track-seg"></div>`).join('');
 
-  // Week divider lines — 3 equally-spaced lines per month (4 visual quarters each)
+  // W1-W4 per month: divide each month into 4 equal quarters
   const _monthStarts = [5,6,7,8,9,10,11,12].map(m => new Date(`2026-${String(m).padStart(2,'0')}-01T00:00:00`));
-  _monthStarts.push(new Date('2027-01-01T00:00:00')); // sentinel
-  const _weekPcts = [];
+  _monthStarts.push(new Date('2027-01-01T00:00:00'));
+  const _weekLines = [], _weekLabels = [];
   for (let i = 0; i < _monthStarts.length - 1; i++) {
-    const mStart = (_monthStarts[i]   - YEAR_START) / 86400000;
-    const mLen   = (_monthStarts[i+1] - _monthStarts[i]) / 86400000;
+    const mStartDay = (_monthStarts[i]   - YEAR_START) / 86400000;
+    const mLen      = (_monthStarts[i+1] - _monthStarts[i]) / 86400000;
+    // divider lines at 1/4, 2/4, 3/4
     for (let q = 1; q <= 3; q++) {
-      _weekPcts.push(((mStart + mLen * q / 4) / YEAR_DAYS * 100).toFixed(2));
+      const pct = ((mStartDay + mLen * q / 4) / YEAR_DAYS * 100).toFixed(2);
+      _weekLines.push(pct);
+    }
+    // W1-W4 labels centered in each quarter
+    for (let q = 0; q < 4; q++) {
+      const pct = ((mStartDay + mLen * (q + 0.5) / 4) / YEAR_DAYS * 100).toFixed(2);
+      _weekLabels.push({pct, label: `W${q+1}`});
     }
   }
-  const weekLines = _weekPcts.map(p =>
-    `<div style="position:absolute;top:0;bottom:0;left:${p}%;width:1px;background:rgba(0,0,0,0.045);pointer-events:none"></div>`
+  const weekLines = _weekLines.map(p =>
+    `<div style="position:absolute;top:0;bottom:0;left:${p}%;width:1px;background:rgba(0,0,0,0.07);pointer-events:none;z-index:1"></div>`
+  ).join('');
+  const weekTicks = _weekLabels.map(w =>
+    `<div style="position:absolute;left:${w.pct}%;font-size:9px;font-weight:600;color:var(--text-light);white-space:nowrap;top:50%;transform:translate(-50%,-50%)">${w.label}</div>`
   ).join('');
 
   const buildBar = (a, color, isSubTask, deleteHtml = '') => {
@@ -444,11 +454,18 @@ function renderGantt() {
       : `<span style="display:inline-block;width:16px;flex-shrink:0"></span>`;
     const subBadge = hasChildren ? `<span style="font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1px 6px;color:var(--text-light);margin-left:4px">${children.length}</span>` : '';
 
+    // Unplanned = no dates on parent or any child
+    const hasAnyDates = (a.startDate||a.endDate||a.startMonth||a.endMonth) ||
+      children.some(c => c.startDate||c.endDate||c.startMonth||c.endMonth);
+    const isUnplanned = !hasAnyDates;
+
     const isActive = state.ganttActiveRow === ganttKey;
-    const activeStyle = isActive ? `background:${a.pillarColor}18;` : '';
+    const activeStyle = isActive ? `background:${a.pillarColor}18;` : (isUnplanned ? 'opacity:0.5;' : '');
     tableRows += `<tr class="gantt-row-parent" onclick="setGanttActiveRow('${ganttKey}')" style="${activeStyle}cursor:pointer">
       <td class="td-name" style="padding-left:6px;border-left:4px solid ${a.pillarColor};overflow:hidden">
-        <div style="display:flex;align-items:center;gap:4px;overflow:hidden">${chevron}<div style="display:flex;align-items:center;gap:4px;flex-wrap:nowrap;overflow:hidden;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:600;min-width:0;flex-shrink:1">${escHtml(a.name)}</span>${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}${statusPill(a.status, `updateGanttStatus('${a.pillarId}',${a.idx},'${nextStatus[a.status||'Planned']}');state.ganttActiveRow='${ganttKey}';render()`)}</div></div>
+        <div style="display:flex;align-items:center;gap:4px;overflow:hidden">${chevron}<div style="display:flex;align-items:center;gap:4px;flex-wrap:nowrap;overflow:hidden;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:600;min-width:0;flex-shrink:1">${escHtml(a.name)}</span>${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}${isUnplanned
+  ? `<span style="display:inline-flex;align-items:center;font-size:8px;font-weight:700;letter-spacing:0.03em;color:#6b7280;background:#f3f4f6;border-radius:20px;padding:1px 5px;white-space:nowrap;flex-shrink:0">Unplanned</span>`
+  : statusPill(a.status, `updateGanttStatus('${a.pillarId}',${a.idx},'${nextStatus[a.status||'Planned']}');state.ganttActiveRow='${ganttKey}';render()`)}</div></div>
       </td>
       <td class="td-owner">${escHtml(a.owner||'—')}</td>
       <td class="td-sel"></td>
@@ -505,7 +522,14 @@ function renderGantt() {
               <th class="col-owner">Owner</th>
               <th class="col-month-sel">Start date</th>
               <th class="col-month-sel">End date</th>
-              <th class="col-timeline"><div class="gantt-month-ticks">${monthTicks}</div>${weekLines}</th>
+              <th class="col-timeline"><div class="gantt-month-ticks">${monthTicks}</div></th>
+            </tr>
+            <tr>
+              <th class="col-name" style="font-size:9px;color:var(--text-light);font-weight:500;padding:3px 8px;border-top:1px solid var(--border)"></th>
+              <th class="col-owner"></th>
+              <th class="col-month-sel" style="border-top:1px solid var(--border)"></th>
+              <th class="col-month-sel" style="border-top:1px solid var(--border)"></th>
+              <th class="col-timeline" style="border-top:1px solid var(--border);height:22px;padding:0;position:relative">${weekLines}${weekTicks}</th>
             </tr>
           </thead>
           <tbody>${tableRows}</tbody>
