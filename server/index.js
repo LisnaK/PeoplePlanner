@@ -6,6 +6,15 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '10mb' }));
+// Never cache index.html — always serve fresh
+app.use((req, res, next) => {
+  if (req.path === '/' || req.path === '/index.html') {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
+  next();
+});
 app.use(express.static(path.join(__dirname, '../public')));
 
 // ── GET full state ──────────────────────────────────────────────────────────
