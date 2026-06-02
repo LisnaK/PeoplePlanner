@@ -785,5 +785,23 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
     <div style="position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.04em;pointer-events:none">v1.3</div>
+
+<script>
+function scaleCalendar() {
+  var body = document.body;
+  var scaleX = window.innerWidth / 1400;
+  var scaleY = window.innerHeight / 2000;
+  var scale = Math.min(scaleX, scaleY);
+  body.style.transform = 'scale(' + scale + ')';
+  body.style.transformOrigin = 'top left';
+  body.style.width = '1400px';
+  body.style.height = '2000px';
+  document.documentElement.style.width = Math.round(1400 * scale) + 'px';
+  document.documentElement.style.height = Math.round(2000 * scale) + 'px';
+  document.documentElement.style.overflow = 'hidden';
+}
+scaleCalendar();
+window.addEventListener('resize', scaleCalendar);
+</script>
 </body>
 </html>
