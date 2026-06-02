@@ -372,6 +372,24 @@ function renderGantt() {
   const todayLine = (todayPct > 0 && todayPct < 100)
     ? `<div style="position:absolute;top:0;bottom:0;left:${todayPct.toFixed(2)}%;width:0;border-left:2px dotted #ef4444;opacity:0.6;pointer-events:none;z-index:4"></div>`
     : '';
+
+  // Current week highlight band
+  const _monthStarTs2 = [5,6,7,8,9,10,11,12].map(m => new Date(`2026-${String(m).padStart(2,'0')}-01T00:00:00`));
+  _monthStarTs2.push(new Date('2027-01-01T00:00:00'));
+  let _weekHighlight = '';
+  for (let i = 0; i < _monthStarTs2.length - 1; i++) {
+    const mStartDay = (_monthStarTs2[i] - YEAR_START) / 86400000;
+    const mLen = (_monthStarTs2[i+1] - _monthStarTs2[i]) / 86400000;
+    for (let q = 0; q < 4; q++) {
+      const wStart = (mStartDay + mLen * q / 4) / YEAR_DAYS * 100;
+      const wEnd   = (mStartDay + mLen * (q+1) / 4) / YEAR_DAYS * 100;
+      if (todayPct >= wStart && todayPct < wEnd) {
+        _weekHighlight = `<div style="position:absolute;top:0;bottom:0;left:${wStart.toFixed(2)}%;width:${(wEnd-wStart).toFixed(2)}%;background:rgba(99,102,241,0.07);pointer-events:none;z-index:0"></div>`;
+        break;
+      }
+    }
+    if (_weekHighlight) break;
+  }
   const getEndDt = (item) => {
     if (item.endDate) return new Date(item.endDate+'T00:00:00');
     if (item.endMonth) { const m=parseInt(item.endMonth); return new Date(2026, m, 0); }
@@ -434,6 +452,7 @@ function renderGantt() {
     const barClass = isSubTask ? 'gantt-bar-subtask' : 'gantt-bar-parent';
     return `<td class="gantt-bar-cell">
       <div class="gantt-bar-track">${trackSegs}</div>
+      ${_weekHighlight}
       ${weekLines}
       ${todayLine}
       <div class="gantt-bar-abs ${barClass}" style="left:${leftPct.toFixed(1)}%;width:${widthPct.toFixed(1)}%;background:${barColor};opacity:${barOpacity}">${doneOverlay}</div>
@@ -471,7 +490,7 @@ function renderGantt() {
     const activeStyle = isActive ? `background:${a.pillarColor}18;` : (isUnplanned ? 'opacity:0.5;' : '');
     tableRows += `<tr class="gantt-row-parent" onclick="setGanttActiveRow('${ganttKey}')" style="${activeStyle}cursor:pointer">
       <td class="td-name" style="padding-left:6px;border-left:4px solid ${a.pillarColor};overflow:hidden">
-        <div style="display:flex;align-items:center;gap:4px;overflow:hidden">${chevron}<div style="display:flex;align-items:center;gap:4px;flex-wrap:nowrap;overflow:hidden;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:600;min-width:0;flex-shrink:1">${escHtml(a.name)}</span>${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}${isUnplanned
+        <div style="display:flex;align-items:flex-start;gap:4px">${chevron}<div style="display:flex;align-items:flex-start;gap:4px;flex-wrap:wrap;min-width:0"><span style="white-space:normal;word-break:break-word;font-size:12px;font-weight:600;min-width:0;flex-shrink:1">${escHtml(a.name)}</span>${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}${isUnplanned
   ? `<span style="display:inline-flex;align-items:center;font-size:8px;font-weight:700;letter-spacing:0.03em;color:#6b7280;background:#f3f4f6;border-radius:20px;padding:1px 5px;white-space:nowrap;flex-shrink:0">Unplanned</span>`
   : statusPill(a.status, `updateGanttStatus('${a.pillarId}',${a.idx},'${nextStatus[a.status||'Planned']}');state.ganttActiveRow='${ganttKey}';render()`)}</div></div>
       </td>
