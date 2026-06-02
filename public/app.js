@@ -210,7 +210,7 @@ function renderOverview() {
       ? `<div style="font-size:11px;color:var(--text-light);text-align:center;padding:6px 0;font-style:italic">No activities yet</div>`
       : `<div class="pillar-col-activities">
           ${activities.map(a => {
-            const unplanned = !a.startMonth || !a.endMonth;
+            const unplanned = (!a.startMonth && !a.startDate) || (!a.endMonth && !a.endDate);
             const allSupport = [...new Set([...(a.support||[]), ...(a.children||[]).flatMap(c=>c.support||[])])];
             return `<div class="pillar-col-activity-item" style="border-left-color:${p.color};${unplanned?'opacity:0.45;':''}" onclick="event.stopPropagation();setTab('${p.id}')">
               <span style="flex:1">${escHtml(a.name)}</span>
