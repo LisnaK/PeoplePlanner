@@ -349,6 +349,9 @@ function renderGantt() {
     : `${scheduled} of ${allActs.length} activities scheduled. Set remaining months to complete your timeline.`;
 
   const dateInput = (id, val, onChange) => `<input type="date" class="gantt-date-input" id="${id}" value="${val||''}" onchange="${onChange}" />`;
+  const statusColors = {Planned:'#94a3b8','In Progress':'#f59e0b',Done:'#22c55e'};
+  const nextStatus   = {Planned:'In Progress','In Progress':'Done',Done:'Planned'};
+  const statusPill   = (s, onClick) => `<span onclick="event.stopPropagation();${onClick}" title="Click to change status" style="display:inline-flex;align-items:center;font-size:8px;font-weight:700;letter-spacing:0.03em;color:#fff;background:${statusColors[s||'Planned']};border-radius:20px;padding:1px 5px;white-space:nowrap;cursor:pointer;flex-shrink:0">${s||'Planned'}</span>`;
 
   let tableRows = '';
   let currentPillar = null;
@@ -442,15 +445,20 @@ function renderGantt() {
     const subBadge = hasChildren ? `<span style="font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1px 6px;color:var(--text-light);margin-left:4px">${children.length}</span>` : '';
 
     const isActive = state.ganttActiveRow === ganttKey;
-    const activeStyle = isActive ? `background:${a.pillarColor}22;border-left:3px solid ${a.pillarColor};` : '';
+    const activeStyle = isActive ? `background:${a.pillarColor}18;` : '';
     tableRows += `<tr class="gantt-row-parent" onclick="setGanttActiveRow('${ganttKey}')" style="${activeStyle}cursor:pointer">
-      <td class="td-name" style="padding-left:${isActive?'21':'24'}px">
-        <div style="display:flex;align-items:center">${chevron}<div><div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">${escHtml(a.name)}${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="margin-left:4px;display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}</div><div style="margin-top:4px"><select onclick="event.stopPropagation()" onchange="updateGanttStatus('${a.pillarId}',${a.idx},this.value);state.ganttActiveRow='${ganttKey}';render()" style="font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:16px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22 viewBox=%220 0 8 8%22><path fill=%22%23aaa%22 d=%22M0 2l4 4 4-4z%22/></svg>');background-repeat:no-repeat;background-position:right 4px center;background-size:7px;opacity:0.75"><option value="Planned" ${a.status==='Planned'?'selected':''}>Planned</option><option value="In Progress" ${a.status==='In Progress'?'selected':''}>In Progress</option><option value="Done" ${a.status==='Done'?'selected':''}>Done</option></select></div></div></div>
+      <td class="td-name" style="padding-left:6px;border-left:4px solid ${a.pillarColor};overflow:hidden">
+        <div style="display:flex;align-items:center;gap:4px;overflow:hidden">${chevron}<div style="display:flex;align-items:center;gap:4px;flex-wrap:nowrap;overflow:hidden;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:600;min-width:0;flex-shrink:1">${escHtml(a.name)}</span>${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}${statusPill(a.status, `updateGanttStatus('${a.pillarId}',${a.idx},'${nextStatus[a.status||'Planned']}');state.ganttActiveRow='${ganttKey}';render()`)}</div></div>
       </td>
       <td class="td-owner">${escHtml(a.owner||'—')}</td>
-      <td class="td-sel">${dateInput(`gsd-${a.pillarId}-${a.idx}`, a.startDate, `updateGanttDate('${a.pillarId}',${a.idx},'startDate',this.value)`)}</td>
-      <td class="td-sel">${dateInput(`ged-${a.pillarId}-${a.idx}`, a.endDate,   `updateGanttDate('${a.pillarId}',${a.idx},'endDate',this.value)`)}</td>
-      ${buildBar(a, a.pillarColor, false, `<button class="del-btn" onclick="deleteActivity('${a.pillarId}',${a.idx})" aria-label="Delete activity"><i class="ti ti-x" aria-hidden="true"></i></button>`)}
+      <td class="td-sel"></td>
+      <td class="td-sel"></td>
+      ${(()=>{
+        const cds = children.filter(c=>c.startDate||c.endDate);
+        const ds = cds.length ? cds.reduce((m,c)=>c.startDate&&(!m||c.startDate<m)?c.startDate:m,null) : null;
+        const de = cds.length ? cds.reduce((m,c)=>c.endDate&&(!m||c.endDate>m)?c.endDate:m,null) : null;
+        return buildBar({...a,startDate:ds,endDate:de,startMonth:null,endMonth:null}, a.pillarColor, false, `<button class="del-btn" onclick="deleteActivity('${a.pillarId}',${a.idx})" aria-label="Delete activity"><i class="ti ti-x" aria-hidden="true"></i></button>`);
+      })()}
     </tr>`;
 
     if (hasChildren && !isCollapsed) {
@@ -458,17 +466,14 @@ function renderGantt() {
         const csm = c.startMonth ? parseInt(c.startMonth) : null;
         const cem = c.endMonth   ? parseInt(c.endMonth)   : null;
         tableRows += `<tr class="gantt-row-sub" style="--row-color:${a.pillarColor}" onmouseover="this.style.background='${a.pillarColor}18'" onmouseout="this.style.background=''" onclick="event.stopPropagation()">
-          <td class="td-name" style="padding-left:28px">
-            <div style="display:flex;align-items:center;gap:6px">
-              ${children.length > 1 ? `<div style="display:flex;flex-direction:column;gap:1px;flex-shrink:0">
-                <button onclick="event.stopPropagation();moveSubTask('${a.pillarId}',${a.idx},${ci},-1)" ${ci===0?'disabled':''} style="background:none;border:none;border-radius:3px;padding:1px 3px;cursor:${ci===0?'default':'pointer'};color:${ci===0?'#ddd':'#b0b8cc'};font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center" onmouseover="if(!this.disabled)this.style.color='var(--navy)'" onmouseout="this.style.color='${ci===0?'#ddd':'#b0b8cc'}'" title="Move up"><i class="ti ti-chevron-up"></i></button>
-                <button onclick="event.stopPropagation();moveSubTask('${a.pillarId}',${a.idx},${ci},1)" ${ci===children.length-1?'disabled':''} style="background:none;border:none;border-radius:3px;padding:1px 3px;cursor:${ci===children.length-1?'default':'pointer'};color:${ci===children.length-1?'#ddd':'#b0b8cc'};font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center" onmouseover="if(!this.disabled)this.style.color='var(--navy)'" onmouseout="this.style.color='${ci===children.length-1?'#ddd':'#b0b8cc'}'" title="Move down"><i class="ti ti-chevron-down"></i></button>
-              </div>` : `<div style="width:18px;flex-shrink:0"></div>`}
-              <span style="color:#bcc4d8;font-size:13px;flex-shrink:0"><i class="ti ti-corner-down-right"></i></span>
-              <div>
-                <div style="font-size:12px;font-weight:400;color:var(--text-muted);font-style:italic;display:flex;align-items:center;gap:4px">${escHtml(c.name)}${(c.support&&c.support.length)?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(c.support)}</span>`:''}</div>
-                <div style="margin-top:3px"><select onchange="updateSubGanttStatus('${a.pillarId}',${a.idx},${ci},this.value)" style="font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:16px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22 viewBox=%220 0 8 8%22><path fill=%22%23aaa%22 d=%22M0 2l4 4 4-4z%22/></svg>');background-repeat:no-repeat;background-position:right 4px center;background-size:7px;opacity:0.75"><option value="Planned" ${c.status==='Planned'?'selected':''}>Planned</option><option value="In Progress" ${c.status==='In Progress'?'selected':''}>In Progress</option><option value="Done" ${c.status==='Done'?'selected':''}>Done</option></select></div>
-              </div>
+          <td class="td-name" style="padding-left:16px;border-left:4px solid ${a.pillarColor}40">
+            <div style="display:flex;align-items:center;gap:5px">
+              ${children.length > 1 ? `<div style="display:flex;flex-direction:column;gap:0px;flex-shrink:0">
+                <button onclick="event.stopPropagation();moveSubTask('${a.pillarId}',${a.idx},${ci},-1)" ${ci===0?'disabled':''} style="background:none;border:none;border-radius:3px;padding:0px 3px;cursor:${ci===0?'default':'pointer'};color:${ci===0?'#ddd':'#b0b8cc'};font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center" onmouseover="if(!this.disabled)this.style.color='var(--navy)'" onmouseout="this.style.color='${ci===0?'#ddd':'#b0b8cc'}'" title="Move up"><i class="ti ti-chevron-up"></i></button>
+                <button onclick="event.stopPropagation();moveSubTask('${a.pillarId}',${a.idx},${ci},1)" ${ci===children.length-1?'disabled':''} style="background:none;border:none;border-radius:3px;padding:0px 3px;cursor:${ci===children.length-1?'default':'pointer'};color:${ci===children.length-1?'#ddd':'#b0b8cc'};font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center" onmouseover="if(!this.disabled)this.style.color='var(--navy)'" onmouseout="this.style.color='${ci===children.length-1?'#ddd':'#b0b8cc'}'" title="Move down"><i class="ti ti-chevron-down"></i></button>
+              </div>` : `<div style="width:14px;flex-shrink:0"></div>`}
+              <span style="color:${a.pillarColor};font-size:11px;flex-shrink:0;opacity:0.5"><i class="ti ti-corner-down-right"></i></span>
+              <div style="font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:4px">${escHtml(c.name)}${(c.support&&c.support.length)?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(c.support)}</span>`:''}</div>
             </div>
           </td>
           <td class="td-owner" style="font-size:12px">${escHtml(c.owner||'—')}</td>
