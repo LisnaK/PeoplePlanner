@@ -1,18 +1,32 @@
 const express = require('express');
 const path    = require('path');
+const fs      = require('fs');
 const db      = require('./db');
+
+// On startup: if DB is empty, seed from data/seed.json
+const _existing = db.prepare('SELECT value FROM app_state WHERE key = ?').get('state');
+if (!_existing) {
+  const seedPath = path.join(__dirname, '../data/seed.json');
+  if (fs.existsSync(seedPath)) {
+    try {
+      const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+      db.prepare('INSERT INTO app_state (key, value) VALUES (?, ?)').run('state', JSON.stringify(seed));
+      console.log('DB seeded from seed.json');
+    } catch(e) { console.error('Seed failed:', e.message); }
+  }
+}
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '10mb' }));
-// Never cache index.html — always serve fresh
+
+// Never cache ANY static file — force proxy and browser to always fetch fresh
 app.use((req, res, next) => {
-  if (req.path === '/' || req.path === '/index.html') {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
-  }
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, s-maxage=0');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
   next();
 });
 app.use(express.static(path.join(__dirname, '../public')));
