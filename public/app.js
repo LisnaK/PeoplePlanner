@@ -356,7 +356,7 @@ function renderGantt() {
   let tableRows = '';
   let currentPillar = null;
 
-  const YEAR_START = new Date('2026-04-01T00:00:00');
+  const YEAR_START = new Date('2026-05-01T00:00:00');
   const YEAR_END   = new Date('2026-12-31T00:00:00');
   const YEAR_DAYS  = (YEAR_END - YEAR_START) / 86400000 + 1;
   const TODAY = new Date(); TODAY.setHours(0,0,0,0);
@@ -375,12 +375,12 @@ function renderGantt() {
     if (endDt && endDt < TODAY) return `<span style="display:inline-flex;align-items:center;gap:2px;background:#fef3c7;color:#854d0e;border-radius:20px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap;margin-left:5px"><i class="ti ti-alert-triangle" style="font-size:9px"></i>Overdue</span>`;
     return '';
   };
-  const VISIBLE_MONTHS = MONTHS_SHORT.slice(3); // Apr–Dec
+  const VISIBLE_MONTHS = MONTHS_SHORT.slice(4); // May–Dec
   const monthTicks = VISIBLE_MONTHS.map(m => `<div class="gantt-month-tick">${m}</div>`).join('');
   const trackSegs  = VISIBLE_MONTHS.map(() => `<div class="gantt-track-seg"></div>`).join('');
 
   // Week divider lines — 3 equally-spaced lines per month (4 visual quarters each)
-  const _monthStarts = [4,5,6,7,8,9,10,11,12].map(m => new Date(`2026-${String(m).padStart(2,'0')}-01T00:00:00`));
+  const _monthStarts = [5,6,7,8,9,10,11,12].map(m => new Date(`2026-${String(m).padStart(2,'0')}-01T00:00:00`));
   _monthStarts.push(new Date('2027-01-01T00:00:00')); // sentinel
   const _weekPcts = [];
   for (let i = 0; i < _monthStarts.length - 1; i++) {
@@ -498,7 +498,7 @@ function renderGantt() {
       <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted)"><span style="display:inline-block;width:0;height:14px;border-left:2px dotted #ef4444;opacity:0.6"></span>Today</span>
     </div>
     <div class="gantt-wrap">
-      <table class="gantt-table" aria-label="H2 2026 activity timeline">
+      <div class="gantt-scroll-wrap"><table class="gantt-table" aria-label="H2 2026 activity timeline">
           <thead>
             <tr>
               <th class="col-name">Activity</th>
@@ -509,7 +509,7 @@ function renderGantt() {
             </tr>
           </thead>
           <tbody>${tableRows}</tbody>
-        </table>
+        </table></div>
       <div class="gantt-legend">${legend}</div>
     </div>`;
 }
