@@ -149,12 +149,20 @@ function showToast(msg) {
 function setTab(id) { state.editingActivity=null; state.editingSubTask=null; state.activeTab=id; render(); window.scrollTo({top:0,behavior:'smooth'}); }
 
 function render() {
+  // Preserve scroll position in Timeline view
+  const _scrollWrap = document.querySelector('.gantt-scroll-wrap');
+  const _scrollTop = _scrollWrap ? _scrollWrap.scrollTop : 0;
   renderNav();
   const main = document.getElementById('mainContent');
   if (state.activeTab==='overview') main.innerHTML = renderOverview();
   else if (state.activeTab==='gantt') main.innerHTML = renderGantt();
   else if (state.activeTab==='backlog') main.innerHTML = renderBacklog();
   else if (state.activeTab==='calendar') main.innerHTML = renderCalendar();
+  // Restore scroll position in Timeline view
+  if (state.activeTab==='gantt' && _scrollTop) {
+    const _sw = document.querySelector('.gantt-scroll-wrap');
+    if (_sw) _sw.scrollTop = _scrollTop;
+  }
   else {
     const idx = PILLARS.findIndex(p=>p.id===state.activeTab);
     if (idx>=0) main.innerHTML = renderPillarPanel(PILLARS[idx], idx);
