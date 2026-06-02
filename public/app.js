@@ -209,15 +209,17 @@ function renderOverview() {
     const activityList = activities.length === 0
       ? `<div style="font-size:11px;color:var(--text-light);text-align:center;padding:6px 0;font-style:italic">No activities yet</div>`
       : `<div class="pillar-col-activities">
-          ${activities.map(a =>
-            `<div class="pillar-col-activity-item" style="border-left-color:${p.color}" onclick="event.stopPropagation();setTab('${p.id}')">
-              ${escHtml(a.name)}
-              ${(()=>{
-                const allSupport = [...new Set([...(a.support||[]), ...(a.children||[]).flatMap(c=>c.support||[])])];
-                return allSupport.length ? `<span style="margin-left:5px;display:inline-flex;gap:3px;align-items:center">${supportMiniPills(allSupport)}</span>` : '';
-              })()}
-            </div>`
-          ).join('')}
+          ${activities.map(a => {
+            const unplanned = !a.startMonth || !a.endMonth;
+            const allSupport = [...new Set([...(a.support||[]), ...(a.children||[]).flatMap(c=>c.support||[])])];
+            return `<div class="pillar-col-activity-item" style="border-left-color:${p.color};${unplanned?'opacity:0.45;':''}" onclick="event.stopPropagation();setTab('${p.id}')">
+              <span style="flex:1">${escHtml(a.name)}</span>
+              <span style="display:inline-flex;gap:3px;align-items:center;flex-shrink:0">
+                ${allSupport.length ? supportMiniPills(allSupport) : ''}
+                ${unplanned ? `<span style="font-size:9px;font-weight:700;letter-spacing:0.04em;color:#6b7280;background:#f3f4f6;border-radius:20px;padding:1px 6px;white-space:nowrap;line-height:1.6">Unplanned</span>` : ''}
+              </span>
+            </div>`;
+          }).join('')}
         </div>`;
     return `<div class="pillar-col" onclick="setTab('${p.id}')">
       <div class="pillar-col-header" style="background:${p.color}">
