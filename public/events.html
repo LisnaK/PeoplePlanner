@@ -6,20 +6,22 @@
 <title>Derivco Global Events 2026</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI','Inter',sans-serif;background:linear-gradient(135deg,#040f24 0%,#071a3e 50%,#0a2252 100%);color:#c0d8f8;min-height:100vh;padding:0;width:100%;overflow-x:hidden}
+body{font-family:'Segoe UI','Inter',sans-serif;background:#f4f6f9;color:#1a2235;min-height:100vh;padding:0;width:100%;overflow-x:hidden}
 .page{max-width:1100px;margin:0 auto;padding:28px 32px 60px}
 .page-header{margin-bottom:32px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.page-title{font-size:24px;font-weight:700;color:#fff;letter-spacing:0.02em}
-.page-sub{font-size:12px;color:#7aaad8;margin-top:4px}
+.page-title{font-size:24px;font-weight:700;color:#0D2147;letter-spacing:0.02em}
+.page-sub{font-size:12px;color:#6b7a99;margin-top:4px}
 .legend{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#7aaad8}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#6b7a99}
 .legend-dot{width:10px;height:10px;border-radius:50%}
 
 .month-section{margin-bottom:36px}
-.month-header{display:flex;align-items:center;justify-content:flex-start;gap:14px;margin-bottom:14px}
+.month-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .month-title{font-size:20px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
 .add-btn{font-size:11px;font-weight:600;border-radius:20px;padding:4px 14px;cursor:pointer;letter-spacing:0.04em;transition:all 0.15s;border:1px solid;background:transparent}
+.add-btn:hover{opacity:0.8}
 
+.cards-container{background:#ffffff;border:1px solid #e2e6ed;border-radius:10px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .cards-grid{display:flex;flex-wrap:wrap;gap:12px}
 .event-card{width:180px;min-height:160px;border-radius:10px;padding:14px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;position:relative;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(255,255,255,0.08)}
 .event-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4)}
@@ -31,34 +33,34 @@ body{font-family:'Segoe UI','Inter',sans-serif;background:linear-gradient(135deg
 .tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.04em;white-space:nowrap}
 .tag-loc{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7)}
 .tag-gg{background:#ffffff;color:#0f172a;border:none;font-size:11px;font-weight:800;padding:4px 12px;letter-spacing:0.04em}
-.card-del{position:absolute;top:8px;right:8px;background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:14px;opacity:0;transition:opacity 0.15s;padding:2px 5px;border-radius:4px;line-height:1}
+.card-del{position:absolute;top:8px;right:8px;background:none;border:none;color:rgba(0,0,0,0.2);cursor:pointer;font-size:14px;opacity:0;transition:opacity 0.15s;padding:2px 5px;border-radius:4px;line-height:1}
 .event-card:hover .card-del{opacity:1}
 .card-del:hover{color:#ef4444;background:rgba(239,68,68,0.15)}
 .tbc-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:10px}
-.empty-month{font-size:12px;color:#3a5a8a;font-style:italic;padding:8px 0}
+.empty-month{font-size:12px;color:#9aa3b8;font-style:italic;padding:8px 0}
 
 /* Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:#0b2454;border:1px solid #1a4a9a;border-radius:10px;padding:28px;width:420px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
-.modal-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:20px}
+.modal{background:#ffffff;border:1px solid #e2e6ed;border-radius:10px;padding:28px;width:420px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.modal-title{font-size:15px;font-weight:700;color:#0D2147;margin-bottom:20px}
 .form-row{margin-bottom:14px}
-.form-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#7aaad8;margin-bottom:5px;display:block}
-.form-input{width:100%;background:#071a3e;border:1px solid #1a4a9a;border-radius:5px;padding:8px 10px;color:#c0d8f8;font-size:13px;font-family:inherit;outline:none;transition:border-color 0.15s}
-.form-input:focus{border-color:#2dd4d4}
+.form-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6b7a99;margin-bottom:5px;display:block}
+.form-input{width:100%;background:#f4f6f9;border:1px solid #e2e6ed;border-radius:5px;padding:8px 10px;color:#1a2235;font-size:13px;font-family:inherit;outline:none;transition:border-color 0.15s}
+.form-input:focus{border-color:#0D2147;outline:none}
 .form-row-half{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .checkbox-row{display:flex;align-items:center;gap:8px;cursor:pointer}
 .checkbox-row input{width:15px;height:15px;accent-color:#2dd4d4;cursor:pointer}
-.checkbox-label{font-size:13px;color:#c0d8f8}
+.checkbox-label{font-size:13px;color:#1a2235}
 .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
 .btn-save{background:#2dd4d4;color:#0f1e3a;border:none;border-radius:5px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer}
 .btn-save:hover{background:#22b8b8}
-.btn-cancel{background:none;color:#7aaad8;border:1px solid #1a4a9a;border-radius:5px;padding:8px 16px;font-size:13px;cursor:pointer}
+.btn-cancel{background:none;color:#6b7a99;border:1px solid #e2e6ed;border-radius:5px;padding:8px 16px;font-size:13px;cursor:pointer}
 .tbc-toggle{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .tbc-toggle input{accent-color:#2dd4d4}
-.tbc-toggle label{font-size:12px;color:#7aaad8;cursor:pointer}
-select.form-input option{background:#0b2454}
-.version{position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.2);pointer-events:none}
+.tbc-toggle label{font-size:12px;color:#6b7a99;cursor:pointer}
+select.form-input option{background:#ffffff}
+.version{position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(0,0,0,0.2);pointer-events:none}
 </style>
 </head>
 <body>
@@ -203,10 +205,9 @@ function render() {
           <div class="month-title" style="color:${color}">${m.label}</div>
           <button class="add-btn" style="color:${color};border-color:${color}40;" onclick="openAdd(${m.num})">+ Add event</button>
         </div>
-        <div class="cards-grid">
-          ${monthEvents.length===0
-            ? '<div class="empty-month">No events yet</div>'
-            : monthEvents.map(e=>{
+        ${monthEvents.length===0
+          ? '<div class="empty-month">No events yet</div>'
+          : `<div class="cards-container"><div class="cards-grid">${monthEvents.map(e=>{
                 const bg = `linear-gradient(135deg,${darken(color,50)} 0%,${darken(color,70)} 100%)`;
                 return `<div class="event-card${e.tbc?' tbc':''}" style="background:${bg};border-color:${color}40;" onclick="openEdit('${e.id}')">
                   <button class="card-del" onclick="event.stopPropagation();deleteEvent('${e.id}')">×</button>
@@ -222,9 +223,7 @@ function render() {
                     ${e.gg?`<span class="tag tag-gg">★ GG Aligned</span>`:''}
                   </div>
                 </div>`;
-              }).join('')
-          }
-        </div>
+              }).join('')}</div></div>`}
       </div>`;
   }).join('');
 }
