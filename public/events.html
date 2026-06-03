@@ -33,7 +33,7 @@ body{font-family:'Segoe UI','Inter',sans-serif;background:linear-gradient(135deg
 .event-tags{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;align-items:center}
 .tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:0.04em}
 .tag-loc{background:#1a3a6a;color:#7aaad8}
-.tag-gg{background:rgba(45,212,212,0.15);color:#2dd4d4;border:1px solid rgba(45,212,212,0.3)}
+.tag-gg{background:rgba(45,212,212,0.2);color:#2dd4d4;border:1px solid #2dd4d4;font-weight:700;letter-spacing:0.06em}
 .del-btn{position:absolute;top:8px;right:8px;background:none;border:none;color:#3a5a8a;cursor:pointer;font-size:14px;opacity:0;transition:opacity 0.15s;padding:2px 6px;border-radius:4px}
 .event-card:hover .del-btn{opacity:1}
 .del-btn:hover{color:#ef4444;background:rgba(239,68,68,0.1)}
@@ -228,7 +228,7 @@ function render() {
                   <div class="event-name">${escHtml(e.name)}</div>
                   <div class="event-tags">
                     ${e.location ? `<span class="tag tag-loc">${escHtml(e.location)}</span>` : ''}
-                    ${e.gg ? `<span class="tag tag-gg">GG Aligned</span>` : ''}
+                    ${e.gg ? `<span class="tag tag-gg">★ GG Aligned</span>` : ''}
                   </div>
                 </div>
                 <button class="del-btn" onclick="event.stopPropagation();deleteEvent('${e.id}')" title="Delete">×</button>

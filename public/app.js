@@ -149,6 +149,15 @@ function showToast(msg) {
 function setTab(id) { state.editingActivity=null; state.editingSubTask=null; state.activeTab=id; render(); window.scrollTo({top:0,behavior:'smooth'}); }
 
 function render() {
+  // Reset main styles when leaving events tab
+  const _mainEl = document.getElementById('mainContent');
+  if (_mainEl && state.activeTab !== 'events') {
+    _mainEl.style.background = '';
+    _mainEl.style.padding = '';
+    _mainEl.style.maxWidth = '';
+    _mainEl.style.margin = '';
+    document.body.style.background = '';
+  }
   // Preserve scroll position in Timeline view
   const _scrollWrap = document.querySelector('.gantt-scroll-wrap');
   const _scrollTop = _scrollWrap ? _scrollWrap.scrollTop : 0;
@@ -886,8 +895,19 @@ function renderCalendar() {
   </div>`;
 }
 function renderEventsTab() {
-  return `<div style="padding:0;overflow:hidden;border-radius:var(--radius);box-shadow:var(--shadow)">
-    <iframe src="/events.html" style="width:100%;height:calc(100vh - 130px);border:none;display:block;" title="Derivco Global Events 2026"></iframe>
+  // Break out of .main padding to fill edge to edge with dark background
+  setTimeout(()=>{
+    const main = document.getElementById('mainContent');
+    if (main) {
+      main.style.background='#040f24';
+      main.style.padding='0';
+      main.style.maxWidth='100%';
+      main.style.margin='0';
+      document.body.style.background='#040f24';
+    }
+  }, 0);
+  return `<div style="background:#040f24;min-height:100vh;margin:0;padding:0">
+    <iframe src="/events.html" style="width:100%;height:calc(100vh - 110px);border:none;display:block;" title="Derivco Global Events 2026"></iframe>
   </div>`;
 }
 
