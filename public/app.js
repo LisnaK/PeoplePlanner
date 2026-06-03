@@ -196,7 +196,7 @@ function renderNav() {
     const count = t.id==='backlog' ? state.backlog.length : t.id==='gantt' ? scheduledCount() : totalCount();
     const isActive = state.activeTab===t.id;
     if (t.special) {
-      const bg = t.id==='events' ? (isActive?'#92400e':'#f59e0b') : (isActive?'#1d4ed8':'#3b82f6');
+      const bg = t.id==='events' ? (isActive?'#fbbf24':'#f59e0b') : (isActive?'#1d4ed8':'#3b82f6');
       const div = t.id==='calendar' ? '<div class="top-nav-divider" style="margin-left:auto"></div>' : '';
       return `${div}<button class="top-nav-btn ${isActive?'active':''}" onclick="setTab('${t.id}')"
           style="background:${bg};color:${t.id==='events'?(isActive?'#fde68a':'#1a1a1a'):'#fff'};border-radius:6px;margin:6px 0 6px 6px;padding:6px 14px;border-bottom:none;">
