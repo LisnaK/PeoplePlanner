@@ -158,6 +158,7 @@ function render() {
   else if (state.activeTab==='gantt') main.innerHTML = renderGantt();
   else if (state.activeTab==='backlog') main.innerHTML = renderBacklog();
   else if (state.activeTab==='calendar') main.innerHTML = renderCalendar();
+  else if (state.activeTab==='events') main.innerHTML = renderEventsTab();
   // Restore scroll position in Timeline view
   if (state.activeTab==='gantt' && _scrollTop) {
     const _sw = document.querySelector('.gantt-scroll-wrap');
@@ -174,7 +175,8 @@ function renderNav() {
     {id:'overview', label:'Overview', icon:'ti-layout-dashboard'},
     {id:'backlog',  label:'Backlog',  icon:'ti-stack-2'},
     {id:'gantt',    label:'Timeline', icon:'ti-calendar-stats'},
-    {id:'calendar', label:'Business Calendar', icon:'ti-calendar-event', special:true}
+    {id:'calendar', label:'Business Calendar', icon:'ti-calendar-event', special:true},
+    {id:'events', label:'Events Calendar', icon:'ti-confetti', special:true}
   ];
   const pillarTabs = [
     ...PILLARS.map((p,i) => ({id:p.id, label:`T${i+1}`, title:p.label, color:p.color}))
@@ -184,9 +186,10 @@ function renderNav() {
     const count = t.id==='backlog' ? state.backlog.length : t.id==='gantt' ? scheduledCount() : totalCount();
     const isActive = state.activeTab===t.id;
     if (t.special) {
-      return `<div class="top-nav-divider" style="margin-left:auto"></div>
-        <button class="top-nav-btn ${isActive?'active':''}" onclick="setTab('${t.id}')"
-          style="background:${isActive?'#7a2e0e':'#c2501f'};color:#fff;border-radius:6px;margin:6px 0;padding:6px 14px;border-bottom:none;">
+      const bg = t.id==='events' ? (isActive?'#1e4a7a':'#2563a8') : (isActive?'#7a2e0e':'#c2501f');
+      const div = t.id==='calendar' ? '<div class="top-nav-divider" style="margin-left:auto"></div>' : '';
+      return `${div}<button class="top-nav-btn ${isActive?'active':''}" onclick="setTab('${t.id}')"
+          style="background:${bg};color:#fff;border-radius:6px;margin:6px 0 6px 6px;padding:6px 14px;border-bottom:none;">
           <i class="ti ${t.icon}" aria-hidden="true"></i>${t.label}
         </button>`;
     }
@@ -882,6 +885,12 @@ function renderCalendar() {
     </div>
   </div>`;
 }
+function renderEventsTab() {
+  return `<div style="padding:0;overflow:hidden;border-radius:var(--radius);box-shadow:var(--shadow)">
+    <iframe src="/events.html" style="width:100%;height:calc(100vh - 130px);border:none;display:block;" title="Derivco Global Events 2026"></iframe>
+  </div>`;
+}
+
 function scaleCalendar() {
   const frame = document.getElementById('calendarFrame');
   const scaler = document.getElementById('calScaler');

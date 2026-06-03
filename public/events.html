@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Derivco Global Events 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Inter',sans-serif;background:#040f24;color:#c0d8f8;min-height:100vh;padding:0}
+.page{max-width:900px;margin:0 auto;padding:32px 24px 60px}
+.page-header{margin-bottom:32px}
+.page-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:0.02em}
+.page-sub{font-size:13px;color:#7aaad8;margin-top:4px}
+.legend{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#7aaad8}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.month-section{margin-bottom:28px}
+.month-title{font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2dd4d4;border-bottom:1px solid #1a4a9a;padding-bottom:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.add-btn{font-size:11px;font-weight:600;color:#2dd4d4;background:rgba(45,212,212,0.1);border:1px solid rgba(45,212,212,0.3);border-radius:20px;padding:3px 12px;cursor:pointer;letter-spacing:0.04em;transition:background 0.15s}
+.add-btn:hover{background:rgba(45,212,212,0.2)}
+.event-list{display:flex;flex-direction:column;gap:6px}
+.event-card{display:flex;align-items:flex-start;gap:10px;background:#0b2454;border:1px solid #1a4a9a;border-radius:6px;padding:10px 12px;cursor:pointer;transition:background 0.15s;position:relative}
+.event-card:hover{background:#0e2d6a}
+.event-card.gg-aligned{border-left:3px solid #2dd4d4}
+.event-card.tbc{opacity:0.75}
+.date-badge{flex-shrink:0;background:#071a3e;border:1px solid #1a4a9a;border-radius:4px;padding:4px 8px;text-align:center;min-width:44px}
+.date-badge .day{font-size:16px;font-weight:700;color:#fff;line-height:1}
+.date-badge .mo{font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#7aaad8;margin-top:1px}
+.date-badge.tbc-badge{display:flex;align-items:center;justify-content:center}
+.date-badge.tbc-badge .tbc-text{font-size:10px;font-weight:700;color:#7aaad8;letter-spacing:0.1em}
+.event-info{flex:1;min-width:0}
+.event-name{font-size:13px;font-weight:600;color:#fff;line-height:1.4}
+.event-tags{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:0.04em}
+.tag-loc{background:#1a3a6a;color:#7aaad8}
+.tag-gg{background:rgba(45,212,212,0.15);color:#2dd4d4;border:1px solid rgba(45,212,212,0.3)}
+.del-btn{position:absolute;top:8px;right:8px;background:none;border:none;color:#3a5a8a;cursor:pointer;font-size:14px;opacity:0;transition:opacity 0.15s;padding:2px 6px;border-radius:4px}
+.event-card:hover .del-btn{opacity:1}
+.del-btn:hover{color:#ef4444;background:rgba(239,68,68,0.1)}
+.empty-month{font-size:12px;color:#3a5a8a;font-style:italic;padding:8px 0}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#0b2454;border:1px solid #1a4a9a;border-radius:10px;padding:28px;width:440px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.modal-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:20px}
+.form-row{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#7aaad8;margin-bottom:5px;display:block}
+.form-input{width:100%;background:#071a3e;border:1px solid #1a4a9a;border-radius:5px;padding:8px 10px;color:#c0d8f8;font-size:13px;font-family:inherit;outline:none;transition:border-color 0.15s}
+.form-input:focus{border-color:#2dd4d4}
+.form-row-half{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.checkbox-row{display:flex;align-items:center;gap:8px;cursor:pointer}
+.checkbox-row input{width:15px;height:15px;accent-color:#2dd4d4;cursor:pointer}
+.checkbox-label{font-size:13px;color:#c0d8f8}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn-save{background:#2dd4d4;color:#0f1e3a;border:none;border-radius:5px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-save:hover{background:#22b8b8}
+.btn-cancel{background:none;color:#7aaad8;border:1px solid #1a4a9a;border-radius:5px;padding:8px 16px;font-size:13px;cursor:pointer}
+.btn-cancel:hover{background:#071a3e}
+.version{position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.25);pointer-events:none}
+.tbc-toggle{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tbc-toggle input{accent-color:#2dd4d4}
+.tbc-toggle label{font-size:12px;color:#7aaad8;cursor:pointer}
+select.form-input option{background:#0b2454}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">Derivco Global Events & Initiatives 2026</div>
+    <div class="page-sub">Click any event to edit · Click + to add a new event</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#2dd4d4"></div> GG Aligned event</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3a5a8a"></div> TBC date</div>
+    </div>
+  </div>
+  <div id="eventsContainer"></div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Add Event</div>
+    <div class="form-row">
+      <label class="form-label">Event Name</label>
+      <input class="form-input" id="inp-name" placeholder="Event name" />
+    </div>
+    <div class="form-row">
+      <div class="tbc-toggle">
+        <input type="checkbox" id="inp-tbc" onchange="toggleDateInput()">
+        <label for="inp-tbc">Date TBC</label>
+      </div>
+      <div id="date-fields" class="form-row-half">
+        <div>
+          <label class="form-label">Day</label>
+          <input class="form-input" id="inp-day" type="number" min="1" max="31" placeholder="e.g. 25" />
+        </div>
+        <div>
+          <label class="form-label">Month</label>
+          <select class="form-input" id="inp-month">
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Location(s)</label>
+      <input class="form-input" id="inp-location" placeholder="e.g. CPT / DBN / PTA" />
+    </div>
+    <div class="form-row">
+      <label class="checkbox-row">
+        <input type="checkbox" id="inp-gg"> <span class="checkbox-label">GG Aligned event</span>
+      </label>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEvent()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="version">v1.3</div>
+
+<script>
+const MONTHS = [
+  {num:5,label:'May'},{num:6,label:'June'},{num:7,label:'July'},{num:8,label:'August'},
+  {num:9,label:'September'},{num:10,label:'October'},{num:11,label:'November'},{num:12,label:'December'}
+];
+const MONTH_SHORT = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const SEED_EVENTS = [
+  {id:'e1',month:5,day:21,tbc:false,name:'AI Hackathon (Dev & IT Ops)',location:'',gg:false},
+  {id:'e2',month:5,day:28,tbc:false,name:'AI Hackathon Prize Giving (Dev & IT Ops) & refreshments',location:'',gg:false},
+  {id:'e3',month:6,day:4,tbc:false,name:'AI Hackathon (Business & Leadership)',location:'',gg:false},
+  {id:'e4',month:6,day:null,tbc:true,name:'AI Hackathon Prize Giving (Business & Leadership) & sweet treats',location:'',gg:false},
+  {id:'e5',month:6,day:7,tbc:false,name:'Family Day',location:'DBN - Fig Tree / Hillcrest',gg:true},
+  {id:'e6',month:6,day:5,tbc:false,name:'TT Day',location:'IOM',gg:true},
+  {id:'e7',month:6,day:null,tbc:true,name:'FIFA WC Sweepstakes',location:'',gg:false},
+  {id:'e8',month:6,day:null,tbc:true,name:'Financial Awareness Drive',location:'',gg:true},
+  {id:'e9',month:7,day:10,tbc:false,name:'3PM Friday / Mandela Stacking Kindness Drive',location:'IOM/DBN/PTA',gg:true},
+  {id:'e10',month:7,day:17,tbc:false,name:'Mandela Stacking Kindness Drive',location:'CPT',gg:false},
+  {id:'e11',month:7,day:null,tbc:true,name:'Summer Party',location:'IOM/UK',gg:true},
+  {id:'e12',month:8,day:null,tbc:true,name:'LeadHERship Initiative',location:'',gg:true},
+  {id:'e13',month:8,day:null,tbc:true,name:'Family Day',location:'PTA',gg:false},
+  {id:'e14',month:9,day:25,tbc:false,name:'Heritage Day Braai & Refreshments',location:'CPT/DBN/PTA',gg:false},
+  {id:'e15',month:9,day:25,tbc:false,name:'Oktoberfest',location:'IOM',gg:true},
+  {id:'e16',month:9,day:null,tbc:true,name:'Onsite Benefits Providers & Consultations',location:'',gg:true},
+  {id:'e17',month:10,day:null,tbc:true,name:'Quiz Event (Mental Health & Fitness Month) + pizza & beer',location:'',gg:false},
+  {id:'e18',month:10,day:30,tbc:false,name:'Halloween No Tricks Just Treats!',location:'',gg:false},
+  {id:'e19',month:10,day:null,tbc:true,name:'Family Day',location:'CPT',gg:false},
+  {id:'e20',month:11,day:null,tbc:true,name:"Men's & Women's Health Checks & Wellness / Movember",location:'',gg:true},
+  {id:'e21',month:11,day:null,tbc:true,name:'Year End Function',location:'CPT',gg:false},
+  {id:'e22',month:11,day:null,tbc:true,name:'Year End Function',location:'PTA',gg:false},
+  {id:'e23',month:12,day:null,tbc:true,name:'Year End Function',location:'DBN',gg:false},
+  {id:'e24',month:12,day:18,tbc:false,name:'Year End Function',location:'IOM',gg:false},
+  {id:'e25',month:12,day:null,tbc:false,name:"Andrew's Wrap Up Speech",location:'',gg:false},
+  {id:'e26',month:12,day:null,tbc:true,name:'Derivkids Christmas',location:'',gg:true},
+  {id:'e27',month:12,day:null,tbc:true,name:'Christmas Food Hamper Drive',location:'',gg:false}
+];
+
+let events = [];
+let editingId = null;
+let addingMonth = null;
+
+async function loadEvents() {
+  try {
+    const res = await fetch('/api/state');
+    const data = await res.json();
+    if (data.globalEvents && data.globalEvents.length > 0) {
+      events = data.globalEvents;
+    } else {
+      events = JSON.parse(JSON.stringify(SEED_EVENTS));
+      await saveToAPI();
+    }
+  } catch(e) {
+    events = JSON.parse(JSON.stringify(SEED_EVENTS));
+  }
+  render();
+}
+
+async function saveToAPI() {
+  try {
+    const res = await fetch('/api/state');
+    const data = await res.json();
+    data.globalEvents = events;
+    await fetch('/api/state', {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  } catch(e) {}
+}
+
+function render() {
+  const container = document.getElementById('eventsContainer');
+  container.innerHTML = MONTHS.map(m => {
+    const monthEvents = events
+      .filter(e => e.month === m.num)
+      .sort((a,b) => (a.tbc ? 99 : a.day||0) - (b.tbc ? 99 : b.day||0));
+    return `
+      <div class="month-section">
+        <div class="month-title">
+          <span>${m.label}</span>
+          <button class="add-btn" onclick="openAdd(${m.num})">+ Add event</button>
+        </div>
+        <div class="event-list">
+          ${monthEvents.length === 0
+            ? '<div class="empty-month">No events yet</div>'
+            : monthEvents.map(e => `
+              <div class="event-card${e.gg?' gg-aligned':''}${e.tbc?' tbc':''}" onclick="openEdit('${e.id}')">
+                ${e.tbc
+                  ? `<div class="date-badge tbc-badge"><span class="tbc-text">TBC</span></div>`
+                  : `<div class="date-badge"><div class="day">${e.day}</div><div class="mo">${MONTH_SHORT[e.month]}</div></div>`
+                }
+                <div class="event-info">
+                  <div class="event-name">${escHtml(e.name)}</div>
+                  <div class="event-tags">
+                    ${e.location ? `<span class="tag tag-loc">${escHtml(e.location)}</span>` : ''}
+                    ${e.gg ? `<span class="tag tag-gg">GG Aligned</span>` : ''}
+                  </div>
+                </div>
+                <button class="del-btn" onclick="event.stopPropagation();deleteEvent('${e.id}')" title="Delete">×</button>
+              </div>`).join('')
+          }
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function openAdd(month) {
+  editingId = null;
+  addingMonth = month;
+  document.getElementById('modalTitle').textContent = 'Add Event';
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-tbc').checked = false;
+  document.getElementById('inp-day').value = '';
+  document.getElementById('inp-month').value = month;
+  document.getElementById('inp-location').value = '';
+  document.getElementById('inp-gg').checked = false;
+  document.getElementById('date-fields').style.display = 'grid';
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('inp-name').focus(),50);
+}
+
+function openEdit(id) {
+  const e = events.find(ev=>ev.id===id);
+  if (!e) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Event';
+  document.getElementById('inp-name').value = e.name;
+  document.getElementById('inp-tbc').checked = e.tbc;
+  document.getElementById('inp-day').value = e.day||'';
+  document.getElementById('inp-month').value = e.month;
+  document.getElementById('inp-location').value = e.location||'';
+  document.getElementById('inp-gg').checked = e.gg||false;
+  document.getElementById('date-fields').style.display = e.tbc ? 'none' : 'grid';
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('inp-name').focus(),50);
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+}
+
+function toggleDateInput() {
+  const tbc = document.getElementById('inp-tbc').checked;
+  document.getElementById('date-fields').style.display = tbc ? 'none' : 'grid';
+}
+
+function saveEvent() {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) { document.getElementById('inp-name').focus(); return; }
+  const tbc = document.getElementById('inp-tbc').checked;
+  const day = tbc ? null : (parseInt(document.getElementById('inp-day').value)||null);
+  const month = parseInt(document.getElementById('inp-month').value);
+  const location = document.getElementById('inp-location').value.trim();
+  const gg = document.getElementById('inp-gg').checked;
+
+  if (editingId) {
+    const e = events.find(ev=>ev.id===editingId);
+    if (e) { e.name=name; e.tbc=tbc; e.day=day; e.month=month; e.location=location; e.gg=gg; }
+  } else {
+    events.push({id:'e'+Date.now(),month,day,tbc,name,location,gg});
+  }
+  saveToAPI();
+  render();
+  closeModal();
+}
+
+function deleteEvent(id) {
+  if (!confirm('Delete this event?')) return;
+  events = events.filter(e=>e.id!==id);
+  saveToAPI();
+  render();
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+
+loadEvents();
+</script>
+</body>
+</html>
