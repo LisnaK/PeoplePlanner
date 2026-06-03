@@ -186,10 +186,10 @@ function renderNav() {
     const count = t.id==='backlog' ? state.backlog.length : t.id==='gantt' ? scheduledCount() : totalCount();
     const isActive = state.activeTab===t.id;
     if (t.special) {
-      const bg = t.id==='events' ? (isActive?'#1e4a7a':'#2563a8') : (isActive?'#7a2e0e':'#c2501f');
+      const bg = t.id==='events' ? (isActive?'#b45309':'#f59e0b') : (isActive?'#7a2e0e':'#c2501f');
       const div = t.id==='calendar' ? '<div class="top-nav-divider" style="margin-left:auto"></div>' : '';
       return `${div}<button class="top-nav-btn ${isActive?'active':''}" onclick="setTab('${t.id}')"
-          style="background:${bg};color:#fff;border-radius:6px;margin:6px 0 6px 6px;padding:6px 14px;border-bottom:none;">
+          style="background:${bg};color:${t.id==='events'?'#1a1a1a':'#fff'};border-radius:6px;margin:6px 0 6px 6px;padding:6px 14px;border-bottom:none;">
           <i class="ti ${t.icon}" aria-hidden="true"></i>${t.label}
         </button>`;
     }

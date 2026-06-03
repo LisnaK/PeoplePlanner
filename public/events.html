@@ -6,7 +6,7 @@
 <title>Derivco Global Events 2026</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI','Inter',sans-serif;background:#040f24;color:#c0d8f8;min-height:100vh;padding:0}
+body{font-family:'Segoe UI','Inter',sans-serif;background:linear-gradient(135deg,#040f24 0%,#071a3e 50%,#0a2252 100%);color:#c0d8f8;min-height:100vh;padding:0;width:100%}
 .page{max-width:900px;margin:0 auto;padding:32px 24px 60px}
 .page-header{margin-bottom:32px}
 .page-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:0.02em}
@@ -15,19 +15,19 @@ body{font-family:'Segoe UI','Inter',sans-serif;background:#040f24;color:#c0d8f8;
 .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#7aaad8}
 .legend-dot{width:10px;height:10px;border-radius:50%}
 .month-section{margin-bottom:28px}
-.month-title{font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2dd4d4;border-bottom:1px solid #1a4a9a;padding-bottom:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.month-title{font-size:18px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2dd4d4;border-bottom:1px solid #1a4a9a;padding-bottom:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .add-btn{font-size:11px;font-weight:600;color:#2dd4d4;background:rgba(45,212,212,0.1);border:1px solid rgba(45,212,212,0.3);border-radius:20px;padding:3px 12px;cursor:pointer;letter-spacing:0.04em;transition:background 0.15s}
 .add-btn:hover{background:rgba(45,212,212,0.2)}
 .event-list{display:flex;flex-direction:column;gap:6px}
-.event-card{display:flex;align-items:flex-start;gap:10px;background:#0b2454;border:1px solid #1a4a9a;border-radius:6px;padding:10px 12px;cursor:pointer;transition:background 0.15s;position:relative}
-.event-card:hover{background:#0e2d6a}
+.event-card{display:flex;align-items:flex-start;gap:10px;background:#0d2d5e;border:1px solid #2a5aa0;border-radius:6px;padding:10px 12px;cursor:pointer;transition:background 0.15s;position:relative}
+.event-card:hover{background:#102f68}
 .event-card.gg-aligned{border-left:3px solid #2dd4d4}
 .event-card.tbc{opacity:0.75}
-.date-badge{flex-shrink:0;background:#071a3e;border:1px solid #1a4a9a;border-radius:4px;padding:4px 8px;text-align:center;min-width:44px}
+.date-badge{flex-shrink:0;background:#040f24;border:1px solid #1a4a9a;border-radius:4px;padding:4px 8px;text-align:center;min-width:44px}
 .date-badge .day{font-size:16px;font-weight:700;color:#fff;line-height:1}
 .date-badge .mo{font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#7aaad8;margin-top:1px}
 .date-badge.tbc-badge{display:flex;align-items:center;justify-content:center}
-.date-badge.tbc-badge .tbc-text{font-size:10px;font-weight:700;color:#7aaad8;letter-spacing:0.1em}
+.date-badge.tbc-badge .tbc-text{font-size:10px;font-weight:700;color:#64748b;letter-spacing:0.1em}
 .event-info{flex:1;min-width:0}
 .event-name{font-size:13px;font-weight:600;color:#fff;line-height:1.4}
 .event-tags{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;align-items:center}
@@ -42,12 +42,12 @@ body{font-family:'Segoe UI','Inter',sans-serif;background:#040f24;color:#c0d8f8;
 /* Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:#0b2454;border:1px solid #1a4a9a;border-radius:10px;padding:28px;width:440px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.modal{background:#071a3e;border:1px solid #1a4a9a;border-radius:10px;padding:28px;width:440px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
 .modal-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:20px}
 .form-row{margin-bottom:14px}
 .form-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#7aaad8;margin-bottom:5px;display:block}
 .form-input{width:100%;background:#071a3e;border:1px solid #1a4a9a;border-radius:5px;padding:8px 10px;color:#c0d8f8;font-size:13px;font-family:inherit;outline:none;transition:border-color 0.15s}
-.form-input:focus{border-color:#2dd4d4}
+.form-input:focus{border-color:#2dd4d4;outline:none}
 .form-row-half{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .checkbox-row{display:flex;align-items:center;gap:8px;cursor:pointer}
 .checkbox-row input{width:15px;height:15px;accent-color:#2dd4d4;cursor:pointer}
@@ -55,13 +55,13 @@ body{font-family:'Segoe UI','Inter',sans-serif;background:#040f24;color:#c0d8f8;
 .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
 .btn-save{background:#2dd4d4;color:#0f1e3a;border:none;border-radius:5px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer}
 .btn-save:hover{background:#22b8b8}
-.btn-cancel{background:none;color:#7aaad8;border:1px solid #1a4a9a;border-radius:5px;padding:8px 16px;font-size:13px;cursor:pointer}
+.btn-cancel{background:none;color:#64748b;border:1px solid #1a4a9a;border-radius:5px;padding:8px 16px;font-size:13px;cursor:pointer}
 .btn-cancel:hover{background:#071a3e}
 .version{position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.25);pointer-events:none}
 .tbc-toggle{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .tbc-toggle input{accent-color:#2dd4d4}
 .tbc-toggle label{font-size:12px;color:#7aaad8;cursor:pointer}
-select.form-input option{background:#0b2454}
+select.form-input option{background:#102f68}
 </style>
 </head>
 <body>
@@ -128,6 +128,16 @@ select.form-input option{background:#0b2454}
 <div class="version">v1.3</div>
 
 <script>
+const MONTH_COLORS = {
+  5:'#f59e0b',   // May - amber
+  6:'#10b981',   // June - emerald
+  7:'#3b82f6',   // July - blue
+  8:'#ec4899',   // August - pink
+  9:'#f97316',   // September - orange
+  10:'#8b5cf6',  // October - purple
+  11:'#14b8a6',  // November - teal
+  12:'#ef4444'   // December - red
+};
 const MONTHS = [
   {num:5,label:'May'},{num:6,label:'June'},{num:7,label:'July'},{num:8,label:'August'},
   {num:9,label:'September'},{num:10,label:'October'},{num:11,label:'November'},{num:12,label:'December'}
@@ -201,15 +211,15 @@ function render() {
       .sort((a,b) => (a.tbc ? 99 : a.day||0) - (b.tbc ? 99 : b.day||0));
     return `
       <div class="month-section">
-        <div class="month-title">
+        <div class="month-title" style="color:${MONTH_COLORS[m.num]||'#2dd4d4'};border-bottom-color:${MONTH_COLORS[m.num]||'#2dd4d4'}30;">
           <span>${m.label}</span>
-          <button class="add-btn" onclick="openAdd(${m.num})">+ Add event</button>
+          <button class="add-btn" style="color:${MONTH_COLORS[m.num]||'#2dd4d4'};background:${MONTH_COLORS[m.num]||'#2dd4d4'}18;border-color:${MONTH_COLORS[m.num]||'#2dd4d4'}40;" onclick="openAdd(${m.num})">+ Add event</button>
         </div>
         <div class="event-list">
           ${monthEvents.length === 0
             ? '<div class="empty-month">No events yet</div>'
             : monthEvents.map(e => `
-              <div class="event-card${e.gg?' gg-aligned':''}${e.tbc?' tbc':''}" onclick="openEdit('${e.id}')">
+              <div class="event-card${e.gg?' gg-aligned':''}${e.tbc?' tbc':''}" style="border-left:3px solid ${MONTH_COLORS[m.num]||'#2dd4d4'};${e.gg?'border-left-color:#2dd4d4;':''}" onclick="openEdit('${e.id}')">
                 ${e.tbc
                   ? `<div class="date-badge tbc-badge"><span class="tbc-text">TBC</span></div>`
                   : `<div class="date-badge"><div class="day">${e.day}</div><div class="mo">${MONTH_SHORT[e.month]}</div></div>`
