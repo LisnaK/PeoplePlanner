@@ -159,6 +159,22 @@ function render() {
     document.body.style.background = '';
     document.body.style.overflow = '';
   }
+  // Toggle aurora on overview
+  if (window._toggleAurora) {
+    const onOverview = state.activeTab === 'overview';
+    window._toggleAurora(onOverview);
+    document.body.style.background = onOverview ? 'transparent' : '';
+    const _mainEl2 = document.getElementById('mainContent');
+    if (_mainEl2) {
+      _mainEl2.style.background = onOverview ? 'transparent' : '';
+    }
+    const _topNav = document.querySelector('.top-nav');
+    const _tabNav = document.querySelector('.tab-nav');
+    const _appHeader = document.querySelector('.app-header');
+    if (_appHeader) _appHeader.style.background = onOverview ? 'rgba(13,33,71,0.88)' : '';
+    if (_topNav) _topNav.style.background = onOverview ? 'rgba(255,255,255,0.90)' : '';
+    if (_tabNav) _tabNav.style.background = onOverview ? 'rgba(244,246,249,0.88)' : '';
+  }
   // Preserve scroll position in Timeline view
   const _scrollWrap = document.querySelector('.gantt-scroll-wrap');
   const _scrollTop = _scrollWrap ? _scrollWrap.scrollTop : 0;
@@ -231,7 +247,10 @@ function renderOverview() {
       ? `<div style="font-size:11px;color:var(--text-light);text-align:center;padding:6px 0;font-style:italic">No activities yet</div>`
       : `<div class="pillar-col-activities">
           ${activities.map(a => {
-            const unplanned = (!a.startMonth && !a.startDate) || (!a.endMonth && !a.endDate);
+            const hasChildren = (a.children||[]).length > 0;
+            const unplanned = hasChildren
+              ? !(a.children||[]).some(c=>c.startDate||c.endDate||c.startMonth||c.endMonth)
+              : !a.startMonth && !a.startDate && !a.endMonth && !a.endDate;
             const allSupport = [...new Set([...(a.support||[]), ...(a.children||[]).flatMap(c=>c.support||[])])];
             return `<div class="pillar-col-activity-item" style="border-left-color:${p.color};${unplanned?'opacity:0.45;':''}" onclick="event.stopPropagation();setTab('${p.id}')">
               <span style="flex:1">${escHtml(a.name)}</span>
@@ -889,9 +908,9 @@ function renderCalendar() {
   const navH = (document.querySelector('.app-header')?.offsetHeight||60)
              + (document.querySelector('.top-nav')?.offsetHeight||44)
              + (document.querySelector('.tab-nav')?.offsetHeight||42);
-  return `<div style="position:fixed;top:${navH}px;left:0;right:0;bottom:0;z-index:10;overflow:auto;background:#040f24">
+  return `<div style="position:fixed;top:${navH}px;left:0;right:0;bottom:0;z-index:10;overflow-x:hidden;overflow-y:auto;background:transparent">
     <div id="calScaler" style="transform-origin:top left;">
-      <iframe id="calendarFrame" src="/calendar.html" style="width:1400px;height:2000px;border:none;display:block;" title="2026 Business Calendar" onload="scaleCalendar()"></iframe>
+      <iframe id="calendarFrame" src="/calendar.html" style="width:100%;height:1800px;border:none;display:block;" title="2026 Business Calendar" onload="scaleCalendar()"></iframe>
     </div>
   </div>`;
 }
@@ -913,17 +932,7 @@ function renderEventsTab() {
   </div>`;
 }
 
-function scaleCalendar() {
-  const frame = document.getElementById('calendarFrame');
-  const scaler = document.getElementById('calScaler');
-  if (!frame || !scaler) return;
-  const scale = window.innerWidth / 1400;
-  scaler.style.width = (1400 * scale) + 'px';
-  scaler.style.height = (2000 * scale) + 'px';
-  scaler.style.transform = 'scale(' + scale + ')';
-  scaler.style.transformOrigin = 'top left';
-}
-window.addEventListener('resize', scaleCalendar);
+function scaleCalendar() {}
 
 function renderBacklog() {
   const items = state.backlog;

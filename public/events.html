@@ -6,13 +6,13 @@
 <title>Derivco Global Events 2026</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI','Inter',sans-serif;background:#f4f6f9;color:#1a2235;min-height:100vh;padding:0;width:100%;overflow-x:hidden}
+body{font-family:'Segoe UI','Inter',sans-serif;background:transparent;color:#1a2235;min-height:100vh;padding:0;width:100%;overflow-x:hidden}
 .page{max-width:1100px;margin:0 auto;padding:28px 32px 60px}
 .page-header{margin-bottom:32px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.page-title{font-size:24px;font-weight:700;color:#0D2147;letter-spacing:0.02em}
-.page-sub{font-size:12px;color:#6b7a99;margin-top:4px}
+.page-title{font-size:24px;font-weight:700;color:#ffffff;letter-spacing:0.02em}
+.page-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px}
 .legend{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#6b7a99}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.7)}
 .legend-dot{width:10px;height:10px;border-radius:50%}
 
 .month-section{margin-bottom:36px}
@@ -37,7 +37,7 @@ body{font-family:'Segoe UI','Inter',sans-serif;background:#f4f6f9;color:#1a2235;
 .event-card:hover .card-del{opacity:1}
 .card-del:hover{color:#ef4444;background:rgba(239,68,68,0.15)}
 .tbc-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:10px}
-.empty-month{font-size:12px;color:#9aa3b8;font-style:italic;padding:8px 0}
+.empty-month{font-size:12px;color:rgba(255,255,255,0.5);font-style:italic;padding:8px 0}
 
 /* Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center}
@@ -61,9 +61,14 @@ body{font-family:'Segoe UI','Inter',sans-serif;background:#f4f6f9;color:#1a2235;
 .tbc-toggle label{font-size:12px;color:#6b7a99;cursor:pointer}
 select.form-input option{background:#ffffff}
 .version{position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(0,0,0,0.2);pointer-events:none}
+
+#aurora-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.page{position:relative;z-index:1}
+.modal-overlay{z-index:1000}
 </style>
 </head>
 <body>
+<canvas id="aurora-bg"></canvas>
 <div class="page">
   <div class="page-header">
     <div>
@@ -121,7 +126,7 @@ select.form-input option{background:#ffffff}
   </div>
 </div>
 
-<div class="version">v1.3</div>
+<div class="version">v1.4</div>
 
 <script>
 const MONTHS = [
@@ -130,8 +135,8 @@ const MONTHS = [
 ];
 const MONTH_SHORT = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MONTH_COLORS = {
-  5:'#f59e0b', 6:'#10b981', 7:'#3b82f6', 8:'#ec4899',
-  9:'#f97316', 10:'#8b5cf6', 11:'#14b8a6', 12:'#ef4444'
+  5:'#2dd4d4', 6:'#0ea5e9', 7:'#38bdf8', 8:'#6366f1',
+  9:'#06b6d4', 10:'#0891b2', 11:'#14b8a6', 12:'#1d4ed8'
 };
 
 const SEED_EVENTS = [
@@ -281,6 +286,52 @@ function deleteEvent(id){if(!confirm('Delete this event?'))return;events=events.
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 loadEvents();
+</script>
+
+<script>
+(function(){
+  const c=document.getElementById('aurora-bg');
+  const ctx=c.getContext('2d');
+  let W,H,mx=0.5,my=0.5,t=0,clicks=[];
+  const scale=3;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  window.addEventListener('mousemove',e=>{mx=e.clientX/window.innerWidth;my=e.clientY/window.innerHeight;});
+  window.addEventListener('click',e=>{clicks.push({x:e.clientX,y:e.clientY,t:0});});
+  function draw(){
+    t+=0.012;
+    clicks=clicks.filter(c=>{c.t++;return c.t<70;});
+    const sw=Math.ceil(W/scale), sh=Math.ceil(H/scale);
+    const id=ctx.createImageData(sw,sh);
+    const d=id.data;
+    for(let x=0;x<sw;x++){for(let y=0;y<sh;y++){
+      const i=(y*sw+x)*4;
+      const nx=x/sw, ny=y/sh;
+      const w1=Math.sin(nx*4+t*0.5+my*3)*0.5+0.5;
+      const w2=Math.sin(nx*6-t*0.3+mx*4)*0.5+0.5;
+      const w3=Math.sin(ny*5+t*0.4+mx*2)*0.5+0.5;
+      const mix=w1*w2*w3;
+      d[i]=Math.floor(4+mix*20);
+      d[i+1]=Math.floor(80+mix*120+w2*60);
+      d[i+2]=Math.floor(120+mix*100+w1*80);
+      d[i+3]=255;
+    }}
+    const tmp=document.createElement('canvas');
+    tmp.width=sw;tmp.height=sh;
+    tmp.getContext('2d').putImageData(id,0,0);
+    ctx.imageSmoothingEnabled=true;
+    ctx.drawImage(tmp,0,0,W,H);
+    clicks.forEach(cl=>{
+      const g=ctx.createRadialGradient(cl.x,cl.y,0,cl.x,cl.y,120*(1-cl.t/70));
+      g.addColorStop(0,`rgba(255,255,255,${0.35*(1-cl.t/70)})`);
+      g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    });
+    requestAnimationFrame(draw);
+  }
+  resize();
+  window.addEventListener('resize',resize);
+  draw();
+})();
 </script>
 </body>
 </html>

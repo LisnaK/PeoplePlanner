@@ -5,10 +5,11 @@
     <title>Edge 365 · 2026</title>
     <style>
         @page {
-            size: 1400px 2000px;
+            size: auto;
             margin: 0;
         }
 
+        html { overflow: hidden; }
         * {
             margin: 0;
             padding: 0;
@@ -17,11 +18,12 @@
 
         body {
             font-family: 'Segoe UI', 'Inter', 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, #040f24 0%, #071a3e 50%, #0a2252 100%);
+            background: transparent;
             color: #c0d8f8;
             position: relative;
-            width: 1400px;
-            height: 2000px;
+            width: 100vw;
+            height: auto;
+            min-height: 100vh;
             overflow: hidden;
         }
 
@@ -84,7 +86,7 @@
         }
 
         .calendar-grid {
-            margin: 20px 40px 30px 40px;
+            margin: 20px 2vw 30px 2vw;
             border: 1px solid #1e3558;
             border-radius: 4px;
             overflow: hidden;
@@ -247,7 +249,7 @@
         .row-06 .number, .row-06 .milestone { color: #4a8fb5; }
 
         .footer {
-            margin: 30px 40px 40px 40px;
+            margin: 30px 2vw 40px 2vw;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
@@ -353,7 +355,9 @@
             color: #7aaad8;
             text-transform: uppercase;
         }
-    </style>
+    
+        #aurora-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+        </style>
 </head>
 <body>
 
@@ -784,24 +788,54 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-    <div style="position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.04em;pointer-events:none">v1.3</div>
+    <div style="position:fixed;bottom:12px;right:16px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.04em;pointer-events:none">v1.4</div>
 
 <script>
-function scaleCalendar() {
-  var body = document.body;
-  var scaleX = window.innerWidth / 1400;
-  var scaleY = window.innerHeight / 2000;
-  var scale = Math.min(scaleX, scaleY);
-  body.style.transform = 'scale(' + scale + ')';
-  body.style.transformOrigin = 'top left';
-  body.style.width = '1400px';
-  body.style.height = '2000px';
-  document.documentElement.style.width = Math.round(1400 * scale) + 'px';
-  document.documentElement.style.height = Math.round(2000 * scale) + 'px';
-  document.documentElement.style.overflow = 'hidden';
-}
-scaleCalendar();
-window.addEventListener('resize', scaleCalendar);
+// No scaling needed - fluid layout
+</script>
+
+<script>
+(function(){
+  const c=document.createElement('canvas');
+  c.id='aurora-bg';
+  c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none';
+  document.documentElement.appendChild(c);
+  const ctx=c.getContext('2d');
+  let W,H,mx=0.5,my=0.5,t=0,clicks=[];
+  const scale=3;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  window.addEventListener('mousemove',e=>{mx=e.clientX/window.innerWidth;my=e.clientY/window.innerHeight;});
+  window.addEventListener('click',e=>{clicks.push({x:e.clientX,y:e.clientY,t:0});});
+  function draw(){
+    t+=0.012;
+    clicks=clicks.filter(c=>{c.t++;return c.t<70;});
+    const sw=Math.ceil(W/scale),sh=Math.ceil(H/scale);
+    const id=ctx.createImageData(sw,sh);const d=id.data;
+    for(let x=0;x<sw;x++){for(let y=0;y<sh;y++){
+      const i=(y*sw+x)*4;
+      const nx=x/sw,ny=y/sh;
+      const w1=Math.sin(nx*4+t*0.5+my*3)*0.5+0.5;
+      const w2=Math.sin(nx*6-t*0.3+mx*4)*0.5+0.5;
+      const w3=Math.sin(ny*5+t*0.4+mx*2)*0.5+0.5;
+      const mix=w1*w2*w3;
+      d[i]=Math.min(255,Math.floor(4+mix*20));
+      d[i+1]=Math.min(255,Math.floor(80+mix*120+w2*60));
+      d[i+2]=Math.min(255,Math.floor(120+mix*100+w1*80));
+      d[i+3]=255;
+    }}
+    const tmp=document.createElement('canvas');tmp.width=sw;tmp.height=sh;
+    tmp.getContext('2d').putImageData(id,0,0);
+    ctx.imageSmoothingEnabled=true;ctx.drawImage(tmp,0,0,W,H);
+    clicks.forEach(cl=>{
+      const g=ctx.createRadialGradient(cl.x,cl.y,0,cl.x,cl.y,120*(1-cl.t/70));
+      g.addColorStop(0,`rgba(255,255,255,${0.35*(1-cl.t/70)})`);
+      g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    });
+    requestAnimationFrame(draw);
+  }
+  resize();window.addEventListener('resize',resize);draw();
+})();
 </script>
 </body>
 </html>
