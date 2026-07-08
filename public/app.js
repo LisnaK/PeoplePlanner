@@ -69,7 +69,8 @@ const supportTags   = (support) => {
   if (!support || support.length === 0) return '';
   const map = {
     BrandComms: { cls:'badge-brandcomms', icon:'ti-paint', label:'Brand & Comms' },
-    GGL:        { cls:'badge-ggl',        icon:'ti-world', label:'GGL' }
+    GGL:        { cls:'badge-ggl',        icon:'ti-world', label:'GGL' },
+    Q3Commit:   { cls:'badge-q3commit',   icon:'ti-flag',  label:'Q3 Commitment' }
   };
   return `<div class="support-tags">${support.map(s => {
     const t = map[s]; if (!t) return '';
@@ -83,6 +84,8 @@ const supportMiniPills = (support) => {
       ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:0.04em;color:#c2410c;background:#fde8e0;border-radius:20px;padding:1px 6px;white-space:nowrap;line-height:1.6">BR</span>`
       : s === 'GGL'
       ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:0.04em;color:#1e1e1e;background:#e5e7eb;border-radius:20px;padding:1px 6px;white-space:nowrap;line-height:1.6">GGL</span>`
+      : s === 'Q3Commit'
+      ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:800;letter-spacing:0.04em;color:#ffffff;background:#C0272D;border-radius:20px;padding:1px 7px;white-space:nowrap;line-height:1.6">Q3</span>`
       : ''
   ).join(' ');
 };
@@ -91,12 +94,14 @@ const supportCheckboxes = (pfx, support) => {
   return `<div class="support-check-row">
     <label class="support-check-label"><input type="checkbox" id="${pfx}-brandcomms" ${has('BrandComms')} /><span class="badge support-tag badge-brandcomms"><i class="ti ti-paint" style="font-size:10px" aria-hidden="true"></i> Brand &amp; Comms</span></label>
     <label class="support-check-label"><input type="checkbox" id="${pfx}-ggl" ${has('GGL')} /><span class="badge support-tag badge-ggl"><i class="ti ti-world" style="font-size:10px" aria-hidden="true"></i> GGL</span></label>
+    <label class="support-check-label"><input type="checkbox" id="${pfx}-q3commit" ${has('Q3Commit')} /><span class="badge support-tag badge-q3commit"><i class="ti ti-flag" style="font-size:10px" aria-hidden="true"></i> Q3 Commitment</span></label>
   </div>`;
 };
 const readSupportCheckboxes = (pfx) => {
   const support = [];
   if (document.getElementById(`${pfx}-brandcomms`)?.checked) support.push('BrandComms');
   if (document.getElementById(`${pfx}-ggl`)?.checked)        support.push('GGL');
+  if (document.getElementById(`${pfx}-q3commit`)?.checked)   support.push('Q3Commit');
   return support;
 };
 function fmtDate(dateStr) {
@@ -236,13 +241,12 @@ function renderNav() {
 
 /* ── OVERVIEW ── */
 function renderOverview() {
-  const maxCount = Math.max(...PILLARS.map(p=>pillarCount(p.id)), 1);
-
   const pillarCols = PILLARS.map((p, i) => {
     const count = pillarCount(p.id);
-    const barW  = Math.round((count / maxCount) * 100);
-    const sched = (state.activities[p.id]||[]).filter(a=>a.startMonth&&a.endMonth).length;
     const activities = state.activities[p.id] || [];
+    const underwayOrDone = activities.filter(a => a.status === 'In Progress' || a.status === 'Done').length;
+    const barW  = count > 0 ? Math.round((underwayOrDone / count) * 100) : 0;
+    const sched = (state.activities[p.id]||[]).filter(a=>a.startMonth&&a.endMonth).length;
     const activityList = activities.length === 0
       ? `<div style="font-size:11px;color:var(--text-light);text-align:center;padding:6px 0;font-style:italic">No activities yet</div>`
       : `<div class="pillar-col-activities">
@@ -269,7 +273,8 @@ function renderOverview() {
       <div class="pillar-col-body">
         <div class="pillar-col-count">${count}</div>
         <div class="pillar-col-count-label">${count===1?'activity':'activities'}</div>
-        <div class="pillar-col-mini-bar" style="width:100%"><div class="pillar-col-mini-fill" style="width:${barW}%;background:${p.color}"></div></div>
+        <div class="pillar-col-mini-bar" style="width:100%" title="${underwayOrDone} of ${count} activities In Progress or Done"><div class="pillar-col-mini-fill" style="width:${barW}%;background:${p.color}"></div></div>
+        ${count > 0 ? `<div class="pillar-col-bar-label">${underwayOrDone} of ${count} underway or done</div>` : ''}
         ${activityList}
       </div>
     </div>`;
