@@ -234,6 +234,7 @@
   .gantt-bar.bar-mid { border-radius: 0; margin: 0; }
   .gantt-cell-empty { height: 22px; }
   .gantt-row-parent { background: var(--surface); }
+  .gantt-row-parent.zebra { background: #f6f7fb; }
   .gantt-row-parent:hover { background: #e8edf8; }
   .gantt-row-sub { background: #f8f9fe; }
   .gantt-row-sub td { height: 34px !important; }

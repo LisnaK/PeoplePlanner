@@ -164,6 +164,10 @@ function render() {
     document.body.style.background = '';
     document.body.style.overflow = '';
   }
+  // Timeline has its own internal scroll area — stop the page behind it from also scrolling
+  if (state.activeTab === 'gantt') {
+    document.body.style.overflow = 'hidden';
+  }
   // Toggle aurora on overview
   if (window._toggleAurora) {
     const onOverview = state.activeTab === 'overview';
@@ -524,8 +528,9 @@ function renderGantt() {
     const isUnplanned = !hasAnyDates;
 
     const isActive = state.ganttActiveRow === ganttKey;
+    const zebraClass = a.idx % 2 === 1 ? ' zebra' : '';
     const activeStyle = isActive ? `background:${a.pillarColor}18;` : (isUnplanned ? 'opacity:0.5;' : '');
-    tableRows += `<tr class="gantt-row-parent" onclick="setGanttActiveRow('${ganttKey}')" style="${activeStyle}cursor:pointer">
+    tableRows += `<tr class="gantt-row-parent${zebraClass}" onclick="setGanttActiveRow('${ganttKey}')" style="${activeStyle}cursor:pointer">
       <td class="td-name" style="padding-left:6px;border-left:4px solid ${a.pillarColor};overflow:hidden">
         <div style="display:flex;align-items:flex-start;gap:4px">${chevron}<div style="display:flex;align-items:flex-start;gap:4px;flex-wrap:wrap;min-width:0"><span style="white-space:normal;word-break:break-word;font-size:12px;font-weight:600;min-width:0;flex-shrink:1">${escHtml(a.name)}</span>${subBadge}${(()=>{const allSupp=[...new Set([...(a.support||[]),...(a.children||[]).flatMap(c=>c.support||[])])];return allSupp.length?`<span style="display:inline-flex;gap:2px;align-items:center">${supportMiniPills(allSupp)}</span>`:'';})()}${isUnplanned
   ? `<span style="display:inline-flex;align-items:center;font-size:8px;font-weight:700;letter-spacing:0.03em;color:#6b7280;background:#f3f4f6;border-radius:20px;padding:1px 5px;white-space:nowrap;flex-shrink:0">Unplanned</span>`
