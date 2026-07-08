@@ -58,39 +58,5 @@
 <footer class="app-footer">v1.4</footer>
 
 
-<canvas id="main-aurora" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity 0.8s"></canvas>
-<script>
-(function(){
-  const c=document.getElementById('main-aurora');
-  const ctx=c.getContext('2d');
-  let W,H,mx=0.5,my=0.5,t=0;
-  const scale=3;
-  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
-  window.addEventListener('mousemove',e=>{mx=e.clientX/window.innerWidth;my=e.clientY/window.innerHeight;});
-  function draw(){
-    t+=0.012;
-    const sw=Math.ceil(W/scale),sh=Math.ceil(H/scale);
-    const id=ctx.createImageData(sw,sh);const d=id.data;
-    for(let x=0;x<sw;x++){for(let y=0;y<sh;y++){
-      const i=(y*sw+x)*4;
-      const nx=x/sw,ny=y/sh;
-      const w1=Math.sin(nx*4+t*0.5+my*3)*0.5+0.5;
-      const w2=Math.sin(nx*6-t*0.3+mx*4)*0.5+0.5;
-      const w3=Math.sin(ny*5+t*0.4+mx*2)*0.5+0.5;
-      const mix=w1*w2*w3;
-      d[i]=Math.min(255,Math.floor(4+mix*20));
-      d[i+1]=Math.min(255,Math.floor(80+mix*120+w2*60));
-      d[i+2]=Math.min(255,Math.floor(120+mix*100+w1*80));
-      d[i+3]=255;
-    }}
-    const tmp=document.createElement('canvas');tmp.width=sw;tmp.height=sh;
-    tmp.getContext('2d').putImageData(id,0,0);
-    ctx.imageSmoothingEnabled=true;ctx.drawImage(tmp,0,0,W,H);
-    requestAnimationFrame(draw);
-  }
-  resize();window.addEventListener('resize',resize);draw();
-  window._toggleAurora=function(on){c.style.opacity=on?'1':'0';};
-})();
-</script>
 <script src="/app.js?v=1.4"></script>
 </html>

@@ -1,10 +1,10 @@
 const PILLARS = [
-  { id:'p1', label:'Shared Vision & Values', color:'#4AABA3', positioning:'When consistently championed by leaders and lived by teams, it builds clarity and belonging. Our shared vision & mission inspires us to move forward with purpose; our values unite and guide us every day. They shape decision-making and give meaning to every achievement.' },
-  { id:'p2', label:'Decisive & Visible Leadership', color:'#CC3535', positioning:'When leaders act—visibly, transparently, and with conviction—they inspire the organisation to perform, collaborate, and commit to shared goals.' },
-  { id:'p3', label:'Communication & Transparency', color:'#529E52', positioning:'We build trust and alignment by committing to open, honest, and timely communication at all levels. We share not only successes but also challenges and decisions—creating clarity, reducing uncertainty.' },
-  { id:'p4', label:'Recognition & Reward', color:'#E07878', positioning:'Recognition and Reward should be framed less as a "perk" and more as an active driver of your desired culture—shaping what gets celebrated, emulated, and repeated.' },
-  { id:'p5', label:'Engagement', color:'#8B7AB8', positioning:'Deep commitment, belonging, and enthusiasm. We cultivate deep connection, commitment, and enthusiasm among every individual and team.' },
-  { id:'p6', label:'Continuous Improvement', color:'#AAAA28', positioning:'Fostering an environment where all members seek to improve processes, products, and themselves constantly. We never stand still. We look for ways to learn, adapt, and do things better—for ourselves, our customers, and our business.' }
+  { id:'p1', label:'Shared Vision & Values', color:'#0D2147', positioning:'When consistently championed by leaders and lived by teams, it builds clarity and belonging. Our shared vision & mission inspires us to move forward with purpose; our values unite and guide us every day. They shape decision-making and give meaning to every achievement.' },
+  { id:'p2', label:'Decisive & Visible Leadership', color:'#1B4C82', positioning:'When leaders act—visibly, transparently, and with conviction—they inspire the organisation to perform, collaborate, and commit to shared goals.' },
+  { id:'p3', label:'Communication & Transparency', color:'#2C7BB0', positioning:'We build trust and alignment by committing to open, honest, and timely communication at all levels. We share not only successes but also challenges and decisions—creating clarity, reducing uncertainty.' },
+  { id:'p4', label:'Recognition & Reward', color:'#1C8C93', positioning:'Recognition and Reward should be framed less as a "perk" and more as an active driver of your desired culture—shaping what gets celebrated, emulated, and repeated.' },
+  { id:'p5', label:'Engagement', color:'#17967D', positioning:'Deep commitment, belonging, and enthusiasm. We cultivate deep connection, commitment, and enthusiasm among every individual and team.' },
+  { id:'p6', label:'Continuous Improvement', color:'#0E7A5C', positioning:'Fostering an environment where all members seek to improve processes, products, and themselves constantly. We never stand still. We look for ways to learn, adapt, and do things better—for ourselves, our customers, and our business.' }
 ];
 
 const MONTHS = [
